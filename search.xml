@@ -14,7 +14,7 @@
 <p><a href="https://tholman.com/github-corners/">GitHub Corners</a></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim layout/_layout.njk</span><br><span class="line">在 &lt;div class=&quot;headband&quot;&gt;&lt;/div&gt; 下新增代码</span><br></pre></td></tr></table></figure>
 
-<p><strong>页面初始化：</strong><br><a href="https://developer.aliyun.com/article/659028">Git个人博客hexo设置关于、标签、分类、归档、时间线-阿里云开发者社区</a></p>
+<p><strong>页面初始化：</strong><br><a href="https://cs-cshi.github.io/hexo-blog/Hexo-NexT%20%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E3%80%81%E6%A0%87%E7%AD%BE/">设置关于、标签、分类</a></p>
 <p><strong>评论系统：</strong><br><a href="https://waline.js.org/guide/get-started/">快速上手</a><br><a href="https://waline.js.org/guide/features/notification.html">评论通知</a><br><a href="https://vercel.com/">服务部署管理</a></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install @waline/hexo-next</span><br></pre></td></tr></table></figure>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Waline</span><br><span class="line"># For more information: https://waline.js.org, https://github.com/walinejs/waline</span><br><span class="line">waline:</span><br><span class="line">  enable: true #是否开启</span><br><span class="line">  serverURL: waline.imfine.cloud # Waline #服务端地址，注意:Vercel域名被墙，需自行绑定自己域名</span><br><span class="line">  placeholder: 请文明评论 # #评论框的默认文字</span><br><span class="line">  avatar: mm # 头像风格</span><br><span class="line">  meta: [nick, mail, link] # 自定义评论框上面的三个输入框的内容</span><br><span class="line">  pageSize: 10 # 评论数量多少时显示分页</span><br><span class="line">  lang: zh-cn # 语言, 可选值: en, zh-cn</span><br><span class="line">  # Warning: 不要同时启用 `waline.visitor` 以及 `leancloud_visitors`.</span><br><span class="line">  visitor: false # 文章阅读统计</span><br><span class="line">  comment_count: true # 如果为 false , 评论数量只会在当前评论页面显示, 主页则不显示</span><br><span class="line">  requiredFields: [nick, mail] # 设置用户评论时必填的信息，[nick,mail]: [nick] | [nick, mail]</span><br><span class="line">  libUrl: # Set custom library cdn url</span><br></pre></td></tr></table></figure>
@@ -38,7 +38,7 @@
         <category>实用工具</category>
       </categories>
       <tags>
-        <tag>实用工具</tag>
+        <tag>日常</tag>
       </tags>
   </entry>
 </search>
