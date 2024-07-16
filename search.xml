@@ -3,18 +3,28 @@
   <entry>
     <title>Hexo+Next主题博客搭建记录</title>
     <url>/2024/07/16/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<p><strong>安装：</strong><br><a href="https://hexo.io/zh-cn/">Hexo</a><br><strong>主题美化：</strong></p>
+    <content><![CDATA[<p><strong>安装：</strong></p>
+<p><a href="https://hexo.io/zh-cn/">Hexo</a></p>
+<p><strong>主题美化：</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-theme-next</span><br></pre></td></tr></table></figure>
 <p><a href="https://theme-next.js.org/docs/getting-started/">官方手册</a><br><a href="https://marmalade.vip/nextthemebeautify1.html">Hexo+NexT(v7.72)博客主题美化，打造“超炫”网站（一） | Marmalade’s Blog</a><br><a href="https://cloud.tencent.com/developer/article/2317861">Hexo的Next主题优化教程-腾讯云开发者社区-腾讯云</a></p>
 <span id="more"></span>
 
-<p><strong>页面初始化：</strong><br><a href="https://developer.aliyun.com/article/659028">Git个人博客hexo设置关于、标签、分类、归档、时间线-阿里云开发者社区</a><br><strong>评论系统：</strong><br><a href="https://waline.js.org/guide/get-started/">快速上手</a><br><a href="https://waline.js.org/guide/features/notification.html">评论通知</a><br><a href="https://vercel.com/">服务部署管理</a></p>
+<p><strong>页面初始化：</strong><br><a href="https://developer.aliyun.com/article/659028">Git个人博客hexo设置关于、标签、分类、归档、时间线-阿里云开发者社区</a></p>
+<p><strong>评论系统：</strong><br><a href="https://waline.js.org/guide/get-started/">快速上手</a><br><a href="https://waline.js.org/guide/features/notification.html">评论通知</a><br><a href="https://vercel.com/">服务部署管理</a></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install @waline/hexo-next</span><br></pre></td></tr></table></figure>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Waline</span><br><span class="line"># For more information: https://waline.js.org, https://github.com/walinejs/waline</span><br><span class="line">waline:</span><br><span class="line">  enable: true #是否开启</span><br><span class="line">  serverURL: waline.imfine.cloud # Waline #服务端地址，注意:Vercel域名被墙，需自行绑定自己域名</span><br><span class="line">  placeholder: 请文明评论 # #评论框的默认文字</span><br><span class="line">  avatar: mm # 头像风格</span><br><span class="line">  meta: [nick, mail, link] # 自定义评论框上面的三个输入框的内容</span><br><span class="line">  pageSize: 10 # 评论数量多少时显示分页</span><br><span class="line">  lang: zh-cn # 语言, 可选值: en, zh-cn</span><br><span class="line">  # Warning: 不要同时启用 `waline.visitor` 以及 `leancloud_visitors`.</span><br><span class="line">  visitor: false # 文章阅读统计</span><br><span class="line">  comment_count: true # 如果为 false , 评论数量只会在当前评论页面显示, 主页则不显示</span><br><span class="line">  requiredFields: [nick, mail] # 设置用户评论时必填的信息，[nick,mail]: [nick] | [nick, mail]</span><br><span class="line">  libUrl: # Set custom library cdn url</span><br></pre></td></tr></table></figure>
-<p><strong>评论管理：</strong><br><a href="https://waline.imfine.cloud/">后端服务</a><br><strong>域名绑定：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在 public 路径下新建 CNAME 文件，域名填写其中</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>评论管理：</strong><br><a href="https://waline.imfine.cloud/">后端服务</a></p>
+<p><strong>域名绑定：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在 source 目录下新建 CNAME 文件，域名填写其中</span><br></pre></td></tr></table></figure>
+
+
 <p><strong>添加阅读全文按钮</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">文章中需要截断的位置增加</span><br><span class="line">&lt;!--more --&gt;</span><br></pre></td></tr></table></figure>
+
+
 <p><strong>常用操作：</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">本地：hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</span><br><span class="line">远程：hexo clean &amp;&amp; hexo g &amp;&amp; hexo deploy</span><br></pre></td></tr></table></figure>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ hexo new [layout] &lt;title&gt;</span><br><span class="line"></span><br><span class="line">post是默认的布局，但你也可以提供自己的布局。 您可以通过编辑 _config.yml 中的 default_layout 设置来更改默认布局。</span><br></pre></td></tr></table></figure>
