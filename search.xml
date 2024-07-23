@@ -30,7 +30,9 @@
         <category>数据组件</category>
       </categories>
       <tags>
-        <tag>数据库 - 图数据库 - neo4j</tag>
+        <tag>数据库</tag>
+        <tag>图数据库</tag>
+        <tag>neo4j</tag>
       </tags>
   </entry>
   <entry>
