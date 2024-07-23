@@ -6,6 +6,8 @@
     <content><![CDATA[<h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>公司数据团队内部下半年计划有数仓模型进行梳理，治理跨层依赖等场景，需要通过爬虫将数据平台中的依赖关系抓取落地并进行分析。</p>
 <p>针对数仓调度依赖、数据存储等场景，使用图数据库存储和分析有天然的优势。</p>
 <p>在数仓节点&#x2F;边等有限的背景下，结合 <a href="https://db-engines.com/en/ranking/graph+dbms">Graph DBMS</a> 排名，使用热度最高的 Neo4j 社区版单机部署足以满足场景需求，且 Neo4j 发展多年，相关文档较为完善，便于遇到线上问题时查阅排除。</p>
+<span id="more"></span>
+
 <h1 id="二、部署步骤"><a href="#二、部署步骤" class="headerlink" title="二、部署步骤"></a>二、部署步骤</h1><p>通过 Docker 部署：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name neo4j \</span><br><span class="line">-p 7474:7474 \</span><br><span class="line">-p 7687:7687 \</span><br><span class="line">-v /data1/neo4j/data:/data \</span><br><span class="line">-v /data1/neo4j/logs:/logs \</span><br><span class="line">-v /data1/neo4j/conf:/var/lib/neo4j/conf \</span><br><span class="line">-v /data1/neo4j/import:/var/lib/neo4j/import \</span><br><span class="line">--env NEO4J_AUTH=neo4j/bigdata \</span><br><span class="line">neo4j:4.4.35-community</span><br></pre></td></tr></table></figure>
 
