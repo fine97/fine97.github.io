@@ -36,36 +36,6 @@
       </tags>
   </entry>
   <entry>
-    <title>常用工具梳理（文档服务/文件服务）</title>
-    <url>/2024/07/29/tools/</url>
-    <content><![CDATA[<h1 id="一、文件服务器"><a href="#一、文件服务器" class="headerlink" title="一、文件服务器"></a>一、文件服务器</h1><p><a href="https://github.com/codeskyblue/gohttpserver">gohttpserver</a>是一个简单易于部署的 HTTP 文件服务。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d -p 16666:8000 -v /data/file-server:/app/public --name gohttpserver codeskyblue/gohttpserver --upload --delete</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h3><ul>
-<li><code>docker run</code>：这是 Docker 命令，用于运行一个新的容器。</li>
-<li><code>-d</code>：表示以分离模式（detached mode）运行容器。容器将在后台运行，你不会看到其输出。</li>
-<li><code>-p 16666:8000</code>：将宿主机的端口 16666 映射到容器内的端口 8000。这意味着你可以通过访问宿主机的 <code>http://localhost:16666</code> 来访问容器内运行的服务。</li>
-<li><code>-v /data/file-server:/app/public</code>：将宿主机目录 <code>/data/file-server</code> 挂载到容器内的 <code>/app/public</code> 目录。这样，容器内的 <code>/app/public</code> 目录会对应宿主机上的 <code>/data/file-server</code> 目录。所有在容器中上传或删除的文件都会反映到宿主机上的该目录。</li>
-<li><code>--name gohttpserver</code>：为容器指定一个名字 <code>gohttpserver</code>。你可以通过这个名字来管理该容器。</li>
-<li><code>codeskyblue/gohttpserver</code>：这是要运行的 Docker 镜像的名称。<code>codeskyblue/gohttpserver</code> 是一个开源的基于 Go 语言的 HTTP 文件服务器。</li>
-<li><code>--upload</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件上传功能。</li>
-<li><code>--delete</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件删除功能。</li>
-</ul>
-<h1 id="二、文档服务器"><a href="#二、文档服务器" class="headerlink" title="二、文档服务器"></a>二、文档服务器</h1><p><a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material</a> 是 MkDocs 之上的一个强大的文档框架，可以根据项目文档生成静态站点。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -p 8000:8000 -v /home/document/:/docs squidfunk/mkdocs-material</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>实用工具</category>
-      </categories>
-      <tags>
-        <tag>HTTP文件服务器</tag>
-        <tag>文档服务器</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hexo+Next主题博客搭建记录</title>
     <url>/2024/07/16/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[<p><strong>安装：</strong></p>
@@ -105,6 +75,36 @@
       </categories>
       <tags>
         <tag>日常</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>常用工具梳理（文档服务/文件服务）</title>
+    <url>/2024/07/29/tools/</url>
+    <content><![CDATA[<h1 id="一、文件服务器"><a href="#一、文件服务器" class="headerlink" title="一、文件服务器"></a>一、文件服务器</h1><p><a href="https://github.com/codeskyblue/gohttpserver">gohttpserver</a> 是一个简单易于部署的 HTTP 文件服务，支持权限控制，OpenID 接入。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d -p 16666:8000 -v /data/file-server:/app/public --name gohttpserver codeskyblue/gohttpserver --upload --delete</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h3><ul>
+<li><code>docker run</code>：这是 Docker 命令，用于运行一个新的容器。</li>
+<li><code>-d</code>：表示以分离模式（detached mode）运行容器。容器将在后台运行，你不会看到其输出。</li>
+<li><code>-p 16666:8000</code>：将宿主机的端口 16666 映射到容器内的端口 8000。这意味着你可以通过访问宿主机的 <code>http://localhost:16666</code> 来访问容器内运行的服务。</li>
+<li><code>-v /data/file-server:/app/public</code>：将宿主机目录 <code>/data/file-server</code> 挂载到容器内的 <code>/app/public</code> 目录。这样，容器内的 <code>/app/public</code> 目录会对应宿主机上的 <code>/data/file-server</code> 目录。所有在容器中上传或删除的文件都会反映到宿主机上的该目录。</li>
+<li><code>--name gohttpserver</code>：为容器指定一个名字 <code>gohttpserver</code>。你可以通过这个名字来管理该容器。</li>
+<li><code>codeskyblue/gohttpserver</code>：这是要运行的 Docker 镜像的名称。<code>codeskyblue/gohttpserver</code> 是一个开源的基于 Go 语言的 HTTP 文件服务器。</li>
+<li><code>--upload</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件上传功能。</li>
+<li><code>--delete</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件删除功能。</li>
+</ul>
+<h1 id="二、文档服务器"><a href="#二、文档服务器" class="headerlink" title="二、文档服务器"></a>二、文档服务器</h1><p><a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material</a> 是 MkDocs 之上的一个强大的文档框架，可以根据项目文档生成静态站点。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -p 8000:8000 -v /home/document/:/docs squidfunk/mkdocs-material</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>实用工具</category>
+      </categories>
+      <tags>
+        <tag>HTTP文件服务器</tag>
+        <tag>文档服务器</tag>
       </tags>
   </entry>
 </search>
