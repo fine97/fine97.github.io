@@ -53,7 +53,7 @@
 <li><code>--upload</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件上传功能。</li>
 <li><code>--delete</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件删除功能。</li>
 </ul>
-<h1 id="二、文档服务器"><a href="#二、文档服务器" class="headerlink" title="二、文档服务器"></a>二、文档服务器</h1><p><a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material</a> 是 MkDocs 之上的一个强大的文档框架，可以更具项目文档生成静态站点。</p>
+<h1 id="二、文档服务器"><a href="#二、文档服务器" class="headerlink" title="二、文档服务器"></a>二、文档服务器</h1><p><a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material</a> 是 MkDocs 之上的一个强大的文档框架，可以根据项目文档生成静态站点。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -p 8000:8000 -v /home/document/:/docs squidfunk/mkdocs-material</span><br></pre></td></tr></table></figure>
 
 ]]></content>
