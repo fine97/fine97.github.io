@@ -41,6 +41,8 @@
     <content><![CDATA[<h1 id="一、文件服务器"><a href="#一、文件服务器" class="headerlink" title="一、文件服务器"></a>一、文件服务器</h1><p><a href="https://github.com/codeskyblue/gohttpserver">gohttpserver</a>是一个简单易于部署的 HTTP 文件服务。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d -p 16666:8000 -v /data/file-server:/app/public --name gohttpserver codeskyblue/gohttpserver --upload --delete</span><br></pre></td></tr></table></figure>
 
+<span id="more"></span>
+
 <h3 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h3><ul>
 <li><code>docker run</code>：这是 Docker 命令，用于运行一个新的容器。</li>
 <li><code>-d</code>：表示以分离模式（detached mode）运行容器。容器将在后台运行，你不会看到其输出。</li>
