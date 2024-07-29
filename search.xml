@@ -1,23 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Neo4j 图数据库搭建记录</title>
+    <url>/2024/07/23/neo4j/</url>
+    <content><![CDATA[<h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>公司数据团队内部下半年计划有数仓模型进行梳理，治理跨层依赖等场景，需要通过爬虫将数据平台中的依赖关系抓取落地并进行分析。</p>
+<p>针对数仓调度依赖、数据存储等场景，使用图数据库存储和分析有天然的优势。</p>
+<p>在数仓节点&#x2F;边等有限的背景下，结合 <a href="https://db-engines.com/en/ranking/graph+dbms">Graph DBMS</a> 排名，使用热度最高的 Neo4j 社区版单机部署足以满足场景需求，且 Neo4j 发展多年，相关文档较为完善，便于遇到线上问题时查阅排除。</p>
+<span id="more"></span>
+
+<h1 id="二、部署步骤"><a href="#二、部署步骤" class="headerlink" title="二、部署步骤"></a>二、部署步骤</h1><p>通过 Docker 部署：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name neo4j \</span><br><span class="line">-p 7474:7474 \</span><br><span class="line">-p 7687:7687 \</span><br><span class="line">-v /data1/neo4j/data:/data \</span><br><span class="line">-v /data1/neo4j/logs:/logs \</span><br><span class="line">-v /data1/neo4j/conf:/var/lib/neo4j/conf \</span><br><span class="line">-v /data1/neo4j/import:/var/lib/neo4j/import \</span><br><span class="line">--env NEO4J_AUTH=neo4j/bigdata \</span><br><span class="line">neo4j:4.4.35-community</span><br></pre></td></tr></table></figure>
+
+<h3 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h3><ul>
+<li><code>docker run</code>：启动一个新的 Docker 容器。</li>
+<li><code>-d</code>：在后台运行容器，即“detached”模式。</li>
+<li><code>--name neo4j</code>：将容器命名为 <code>neo4j</code>。</li>
+<li><code>-p 7474:7474</code>：将宿主机的 7474 端口映射到容器的 7474 端口，用于 Neo4j HTTP 接口。</li>
+<li><code>-p 7687:7687</code>：将宿主机的 7687 端口映射到容器的 7687 端口，用于 Neo4j Bolt 协议接口。</li>
+<li><code>-v /data1/neo4j/data:/data</code>：将宿主机的 <code>/data1/neo4j/data</code> 目录映射到容器的 <code>/data</code> 目录，用于存储数据库文件。</li>
+<li><code>-v /data1/neo4j/logs:/logs</code>：将宿主机的 <code>/data1/neo4j/logs</code> 目录映射到容器的 <code>/logs</code> 目录，用于存储日志文件。</li>
+<li><code>-v /data1/neo4j/conf:/var/lib/neo4j/conf</code>：将宿主机的 <code>/data1/neo4j/conf</code> 目录映射到容器的 <code>/var/lib/neo4j/conf</code> 目录，用于存储配置文件。</li>
+<li><code>-v /data1/neo4j/import:/var/lib/neo4j/import</code>：将宿主机的 <code>/data1/neo4j/import</code> 目录映射到容器的 <code>/var/lib/neo4j/import</code> 目录，用于导入文件。</li>
+<li><code>--env NEO4J_AUTH=neo4j/xxxxxx</code>：设置环境变量 <code>NEO4J_AUTH</code>，指定 Neo4j 的认证方式（用户名为neo4j，密码为 <code>xxxxxx</code>）。</li>
+<li><code>neo4j:4.4.35-community</code>：指定要运行的 Neo4j 社区版镜像的具体版本 <code>4.4.35</code>。</li>
+</ul>
+<h3 id="修改配置文件-允许远程登陆"><a href="#修改配置文件-允许远程登陆" class="headerlink" title="修改配置文件&#x2F;允许远程登陆"></a>修改配置文件&#x2F;允许远程登陆</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim /data1/neo4j/conf/neo4j.conf</span><br><span class="line">// 指定连接器的默认监听ip为0.0.0.0，即允许任何ip连接到数据库</span><br><span class="line">dbms.connectors.default_listen_address=0.0.0.0</span><br><span class="line">dbms.connector.bolt.listen_address=0.0.0.0:7687</span><br><span class="line">dbms.connector.http.listen_address=0.0.0.0:7474</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、可视化客户端下载"><a href="#三、可视化客户端下载" class="headerlink" title="三、可视化客户端下载"></a>三、可视化客户端下载</h1><p><a href="https://neo4j.com/download/">Neo4j Download</a></p>
+]]></content>
+      <categories>
+        <category>数据组件</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+        <tag>图数据库</tag>
+        <tag>neo4j</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>逻辑题</title>
     <url>/2024/07/29/logic/</url>
-    <content><![CDATA[<ul>
+    <content><![CDATA[<h1 id="1）取水问题"><a href="#1）取水问题" class="headerlink" title="1）取水问题"></a>1）取水问题</h1><ul>
 <li><p><strong>假设有一个池塘，里面有无穷多的水。现有2个空水壶，容积分别为5升和6升。问题是如何只用这2个水壶从池塘里取得3升的水。</strong></p>
-<p>6-5&#x3D;1：6升水壶倒入5升水壶，剩1升水，这1升给5升水壶；</p>
-<p>6-(5-1)&#x3D;2：6升水壶倒入已经有1升水的5升水壶，6升水壶剩余2升水，水给5升水壶，让5升水壶保持2升水；</p>
-<p>6- (5-2) &#x3D;3：6升水壶灌满水，倒水给5升的水壶，此时6升水壶剩余3升水。</p>
-</li>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">6-5=1：6升水壶倒入5升水壶，剩1升水，这1升给5升水壶；</span><br><span class="line"></span><br><span class="line">6-(5-1)=2：6升水壶倒入已经有1升水的5升水壶，6升水壶剩余2升水，水给5升水壶，让5升水壶保持2升水；</span><br><span class="line"></span><br><span class="line">6-(5-2)=3：6升水壶灌满水，倒水给5升的水壶，此时6升水壶剩余3升水。</span><br></pre></td></tr></table></figure></li>
 </ul>
 <span id="more"></span>
 
-<ul>
-<li><p><strong>三个小伙子同时爱上了一个姑娘，为了决定他们谁能娶这个姑娘，他们决定用手枪进行一次决斗。小李的命中率是30％，小黄比他好些，命中率是 50％，最出色的枪手是小林，他从不失误，命中率是100％。由于这个显而易见的事实，为公平起见，他们决定按这样的顺序：小李先开枪，小黄第二，小林最后。然后这样循环，直到他们只剩下一个人。那么这三个人中谁活下来的机会最大呢？他们都应该采取什么样的策略？</strong></p>
-<p>小李打小林，小林生存70%</p>
-<p>小黄再打小林，小林生存35%</p>
-<p>小林打小黄，小黄死亡概率35%，生存概率65%</p>
+<h1 id="2）决斗问题"><a href="#2）决斗问题" class="headerlink" title="2）决斗问题"></a>2）决斗问题</h1><ul>
+<li><strong>三个小伙子同时爱上了一个姑娘，为了决定他们谁能娶这个姑娘，他们决定用手枪进行一次决斗。小李的命中率是30％，小黄比他好些，命中率是 50％，最出色的枪手是小林，他从不失误，命中率是100％。由于这个显而易见的事实，为公平起见，他们决定按这样的顺序：小李先开枪，小黄第二，小林最后。然后这样循环，直到他们只剩下一个人。那么这三个人中谁活下来的机会最大呢？他们都应该采取什么样的策略？</strong></li>
+</ul>
+<h4 id="详细策略分析："><a href="#详细策略分析：" class="headerlink" title="详细策略分析："></a>详细策略分析：</h4><ol>
+<li><strong>小李的策略</strong>：<ul>
+<li>小李的命中率是30%。如果他在第一轮试图击中小黄或小林，他的成功概率分别是0.3，但会立即成为下一个目标。因此，他最好的策略是<strong>射偏</strong>。</li>
+</ul>
 </li>
+<li><strong>小黄的策略</strong>：<ul>
+<li>假设小李在第一轮射偏，小黄面临两种选择：射击小李或小林。</li>
+<li>小黄应该优先考虑击中小林（命中率50%），因为小林是威胁最大的人。如果小林不在，他有较高概率在后续轮次中获胜。</li>
+</ul>
+</li>
+<li><strong>小林的策略</strong>：<ul>
+<li>如果小林还在，他会总是射击最有威胁的人。在这个情况下，小黄是他首先要消灭的目标。</li>
+</ul>
+</li>
+</ol>
+<h4 id="逐步推演："><a href="#逐步推演：" class="headerlink" title="逐步推演："></a>逐步推演：</h4><ol>
+<li><strong>第一轮</strong>：<ul>
+<li>小李射偏。</li>
+<li>小黄射击小林，有50%的概率击中小林。</li>
+</ul>
+</li>
+<li><strong>如果小黄击中小林</strong>：<ol>
+<li><strong>剩下小李和小黄。</strong></li>
+<li>小李先开枪，他有30%的概率击中小黄。如果小李射偏，小黄有50%的概率击中小李。</li>
+<li>如果小李击中小黄，小李胜；如果小李射偏，小黄击中小李，小黄胜。</li>
+</ol>
+</li>
+<li><strong>如果小黄未击中小林</strong>：<ul>
+<li>小林射击小黄，命中率100%，小黄被击中。</li>
+<li><strong>剩下小李和小林。</strong></li>
+<li>小李先开枪，他有30%的概率击中小林。如果小李射偏，小林会击中小李。</li>
+</ul>
+</li>
+</ol>
+<h4 id="概率计算："><a href="#概率计算：" class="headerlink" title="概率计算："></a>概率计算：</h4><ul>
+<li><strong>小李的生存概率</strong>：<ul>
+<li>小黄击中小林（50%）的情况下：<ul>
+<li>小李击中小黄的概率：30% × 50% &#x3D; 15%</li>
+<li>小黄击中小李的概率：70% × 50% &#x3D; 35%</li>
+</ul>
+</li>
+<li>小黄未击中小林（50%）的情况下：<ul>
+<li>小李的生存概率为0，因为小林会击中他。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>小黄的生存概率</strong>：<ul>
+<li>小黄击中小林（50%）的情况下：<ul>
+<li>小黄的生存概率：70%（小李射偏） × 50% &#x3D; 35%</li>
+</ul>
+</li>
+<li>小黄未击中小林（50%）的情况下，小林击中他，生存概率为0。</li>
+</ul>
+</li>
+<li><strong>小林的生存概率</strong>：<ul>
+<li>小黄未击中小林（50%）的情况下：<ul>
+<li>小林的生存概率：100%</li>
+</ul>
+</li>
+<li>小黄击中小林（50%）的情况下，小林的生存概率为0。</li>
+</ul>
+</li>
+</ul>
+<h1 id="3）囚犯问题"><a href="#3）囚犯问题" class="headerlink" title="3）囚犯问题"></a>3）囚犯问题</h1><ul>
 <li><p>一间囚房里关押着两个犯人。每天监狱都会为这间囚房提供一罐汤，让这两个犯人自己来分。起初，这两个人经常会发生争执，因为他们总是有人认为 对方的汤比自己的多。后来他们找到了一个两全其美的办法：一个人分汤，让另一个人先选。于是争端就这么解决了。可是，现在这间囚房里又进来一个新犯人，现 在是三个人来分汤。必须寻找一个新的方法来维持他们之间的和平。该怎么办呢？</p>
 <ul>
 <li></li>
@@ -60,43 +156,6 @@
       </categories>
       <tags>
         <tag>逻辑题</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Neo4j 图数据库搭建记录</title>
-    <url>/2024/07/23/neo4j/</url>
-    <content><![CDATA[<h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>公司数据团队内部下半年计划有数仓模型进行梳理，治理跨层依赖等场景，需要通过爬虫将数据平台中的依赖关系抓取落地并进行分析。</p>
-<p>针对数仓调度依赖、数据存储等场景，使用图数据库存储和分析有天然的优势。</p>
-<p>在数仓节点&#x2F;边等有限的背景下，结合 <a href="https://db-engines.com/en/ranking/graph+dbms">Graph DBMS</a> 排名，使用热度最高的 Neo4j 社区版单机部署足以满足场景需求，且 Neo4j 发展多年，相关文档较为完善，便于遇到线上问题时查阅排除。</p>
-<span id="more"></span>
-
-<h1 id="二、部署步骤"><a href="#二、部署步骤" class="headerlink" title="二、部署步骤"></a>二、部署步骤</h1><p>通过 Docker 部署：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name neo4j \</span><br><span class="line">-p 7474:7474 \</span><br><span class="line">-p 7687:7687 \</span><br><span class="line">-v /data1/neo4j/data:/data \</span><br><span class="line">-v /data1/neo4j/logs:/logs \</span><br><span class="line">-v /data1/neo4j/conf:/var/lib/neo4j/conf \</span><br><span class="line">-v /data1/neo4j/import:/var/lib/neo4j/import \</span><br><span class="line">--env NEO4J_AUTH=neo4j/bigdata \</span><br><span class="line">neo4j:4.4.35-community</span><br></pre></td></tr></table></figure>
-
-<h3 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h3><ul>
-<li><code>docker run</code>：启动一个新的 Docker 容器。</li>
-<li><code>-d</code>：在后台运行容器，即“detached”模式。</li>
-<li><code>--name neo4j</code>：将容器命名为 <code>neo4j</code>。</li>
-<li><code>-p 7474:7474</code>：将宿主机的 7474 端口映射到容器的 7474 端口，用于 Neo4j HTTP 接口。</li>
-<li><code>-p 7687:7687</code>：将宿主机的 7687 端口映射到容器的 7687 端口，用于 Neo4j Bolt 协议接口。</li>
-<li><code>-v /data1/neo4j/data:/data</code>：将宿主机的 <code>/data1/neo4j/data</code> 目录映射到容器的 <code>/data</code> 目录，用于存储数据库文件。</li>
-<li><code>-v /data1/neo4j/logs:/logs</code>：将宿主机的 <code>/data1/neo4j/logs</code> 目录映射到容器的 <code>/logs</code> 目录，用于存储日志文件。</li>
-<li><code>-v /data1/neo4j/conf:/var/lib/neo4j/conf</code>：将宿主机的 <code>/data1/neo4j/conf</code> 目录映射到容器的 <code>/var/lib/neo4j/conf</code> 目录，用于存储配置文件。</li>
-<li><code>-v /data1/neo4j/import:/var/lib/neo4j/import</code>：将宿主机的 <code>/data1/neo4j/import</code> 目录映射到容器的 <code>/var/lib/neo4j/import</code> 目录，用于导入文件。</li>
-<li><code>--env NEO4J_AUTH=neo4j/xxxxxx</code>：设置环境变量 <code>NEO4J_AUTH</code>，指定 Neo4j 的认证方式（用户名为neo4j，密码为 <code>xxxxxx</code>）。</li>
-<li><code>neo4j:4.4.35-community</code>：指定要运行的 Neo4j 社区版镜像的具体版本 <code>4.4.35</code>。</li>
-</ul>
-<h3 id="修改配置文件-允许远程登陆"><a href="#修改配置文件-允许远程登陆" class="headerlink" title="修改配置文件&#x2F;允许远程登陆"></a>修改配置文件&#x2F;允许远程登陆</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim /data1/neo4j/conf/neo4j.conf</span><br><span class="line">// 指定连接器的默认监听ip为0.0.0.0，即允许任何ip连接到数据库</span><br><span class="line">dbms.connectors.default_listen_address=0.0.0.0</span><br><span class="line">dbms.connector.bolt.listen_address=0.0.0.0:7687</span><br><span class="line">dbms.connector.http.listen_address=0.0.0.0:7474</span><br></pre></td></tr></table></figure>
-
-<h1 id="三、可视化客户端下载"><a href="#三、可视化客户端下载" class="headerlink" title="三、可视化客户端下载"></a>三、可视化客户端下载</h1><p><a href="https://neo4j.com/download/">Neo4j Download</a></p>
-]]></content>
-      <categories>
-        <category>数据组件</category>
-      </categories>
-      <tags>
-        <tag>数据库</tag>
-        <tag>图数据库</tag>
-        <tag>neo4j</tag>
       </tags>
   </entry>
   <entry>
