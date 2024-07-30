@@ -1,40 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Neo4j 图数据库搭建记录</title>
-    <url>/2024/07/23/neo4j/</url>
-    <content><![CDATA[<h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>公司数据团队内部下半年计划有数仓模型进行梳理，治理跨层依赖等场景，需要通过爬虫将数据平台中的依赖关系抓取落地并进行分析。</p>
-<p>针对数仓调度依赖、数据存储等场景，使用图数据库存储和分析有天然的优势。</p>
-<p>在数仓节点&#x2F;边等有限的背景下，结合 <a href="https://db-engines.com/en/ranking/graph+dbms">Graph DBMS</a> 排名，使用热度最高的 Neo4j 社区版单机部署足以满足场景需求，且 Neo4j 发展多年，相关文档较为完善，便于遇到线上问题时查阅排除。</p>
-<span id="more"></span>
+    <title>大数据常见 SQL 面试题</title>
+    <url>/2024/07/30/bigdata-sql/</url>
+    <content><![CDATA[<h1 id="一、用户登录问题"><a href="#一、用户登录问题" class="headerlink" title="一、用户登录问题"></a>一、用户登录问题</h1><h2 id="1）最大连续活跃天数"><a href="#1）最大连续活跃天数" class="headerlink" title="1）最大连续活跃天数"></a>1）最大连续活跃天数</h2><p>有一张用户在线记录表，表结构如下，使用任意引擎SQL，得出每个user_id，最大的连续活跃天数max_act_day。</p>
+<p>最大连续活跃天数：每个连续日期天范围内，每日都有在线记录，其中最大的连续日期天个数</p>
+<p><img src="https://jinke.love/wp-content/uploads/2024/03/20240326115836116-image.png" alt="user_id用户id，online_time用户在线时间"></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 先处理数据表粒度到用户/日期并去重</span></span><br><span class="line"><span class="keyword">select</span> user_id, date_format(online_time, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>) online_time</span><br><span class="line"><span class="keyword">from</span> source_table</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> user_id, date_format(online_time, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 按照用户分组处理日期，当前日期➗分组内日期排序，如果是连续登录则login_day会保持一致</span></span><br><span class="line"><span class="keyword">select</span> user_id, date_sub(online_time, <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> user_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> online_time <span class="keyword">ASC</span>)) login_day</span><br><span class="line"><span class="keyword">from</span> source_table_a;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 在上面SQL的基础上继续处理，求出连续登录天数</span></span><br><span class="line"><span class="keyword">select</span> user_id, login_day, <span class="built_in">count</span>(<span class="number">1</span>) login_count</span><br><span class="line"><span class="keyword">from</span> source_table_b</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> user_id, login_day;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 在上面SQL的基础上求最值即可</span></span><br><span class="line"><span class="keyword">select</span> user_id, <span class="built_in">max</span>(login_count) max_active_day</span><br><span class="line"><span class="keyword">from</span> source_table_c</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> user_id;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 合并上述SQL</span></span><br><span class="line"><span class="keyword">select</span> user_id, <span class="built_in">max</span>(login_count) max_active_day</span><br><span class="line"><span class="keyword">from</span> (</span><br><span class="line">  	<span class="comment">-- 求出连续登录天数</span></span><br><span class="line">    <span class="keyword">select</span> user_id, login_day, <span class="built_in">count</span>(<span class="number">1</span>) login_count</span><br><span class="line">    <span class="keyword">from</span> (</span><br><span class="line">      		<span class="comment">-- 按照用户分组处理日期，当前日期➗分组内日期排序，如果是连续登录则login_day会保持一致</span></span><br><span class="line">          <span class="keyword">select</span> user_id, </span><br><span class="line">      		date_sub(online_time, <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> user_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> online_time <span class="keyword">ASC</span>)) login_day</span><br><span class="line">    <span class="keyword">from</span> (</span><br><span class="line">      	<span class="comment">-- 先处理数据表粒度到用户/日期并去重</span></span><br><span class="line">      	<span class="keyword">select</span> user_id, date_format(online_time, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>) online_time</span><br><span class="line">        <span class="keyword">from</span> source_table</span><br><span class="line">        <span class="keyword">group</span> <span class="keyword">by</span> user_id, date_format(online_time, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>)</span><br><span class="line">      )source_table_a</span><br><span class="line">    )source_table_b</span><br><span class="line">    <span class="keyword">group</span> <span class="keyword">by</span> user_id, login_day</span><br><span class="line">) source_table_c</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> user_id;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 使用临时数据替换 source_table</span></span><br><span class="line"><span class="keyword">select</span> user_id, <span class="built_in">max</span>(login_count) max_active_day</span><br><span class="line"><span class="keyword">from</span> (</span><br><span class="line">  	<span class="comment">-- 求出连续登录天数</span></span><br><span class="line">    <span class="keyword">select</span> user_id, login_day, <span class="built_in">count</span>(<span class="number">1</span>) login_count</span><br><span class="line">    <span class="keyword">from</span> (</span><br><span class="line">      		<span class="comment">-- 按照用户分组处理日期，当前日期➗分组内日期排序，如果是连续登录则login_day会保持一致</span></span><br><span class="line">          <span class="keyword">select</span> user_id, </span><br><span class="line">      		date_sub(online_time, <span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> user_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> online_time <span class="keyword">ASC</span>)) login_day</span><br><span class="line">    <span class="keyword">from</span> (</span><br><span class="line">      	<span class="comment">-- 先处理数据表粒度到用户/日期并去重</span></span><br><span class="line">      	<span class="keyword">select</span> user_id, date_format(online_time, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>) online_time</span><br><span class="line">        <span class="keyword">from</span> (<span class="keyword">SELECT</span> <span class="number">1</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-01</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">1</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-02</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">1</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-03</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">1</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-05</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">2</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-02</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">2</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-05</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">2</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-06</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">2</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-07</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">3</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-01</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">3</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-02</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                <span class="keyword">UNION</span> <span class="keyword">all</span></span><br><span class="line">                <span class="keyword">SELECT</span> <span class="number">3</span> user_id, ‘<span class="number">2024</span><span class="number">-01</span><span class="number">-03</span> <span class="number">01</span>:<span class="number">01</span>:<span class="number">01</span>’ online_time</span><br><span class="line">                ) source_table</span><br><span class="line">        <span class="keyword">group</span> <span class="keyword">by</span> user_id, date_format(online_time, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>)</span><br><span class="line">      )source_table_a</span><br><span class="line">    )source_table_b</span><br><span class="line">    <span class="keyword">group</span> <span class="keyword">by</span> user_id, login_day</span><br><span class="line">) source_table_c</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> user_id;</span><br></pre></td></tr></table></figure>
 
-<h1 id="二、部署步骤"><a href="#二、部署步骤" class="headerlink" title="二、部署步骤"></a>二、部署步骤</h1><p>通过 Docker 部署：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name neo4j \</span><br><span class="line">-p 7474:7474 \</span><br><span class="line">-p 7687:7687 \</span><br><span class="line">-v /data1/neo4j/data:/data \</span><br><span class="line">-v /data1/neo4j/logs:/logs \</span><br><span class="line">-v /data1/neo4j/conf:/var/lib/neo4j/conf \</span><br><span class="line">-v /data1/neo4j/import:/var/lib/neo4j/import \</span><br><span class="line">--env NEO4J_AUTH=neo4j/bigdata \</span><br><span class="line">neo4j:4.4.35-community</span><br></pre></td></tr></table></figure>
 
-<h3 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h3><ul>
-<li><code>docker run</code>：启动一个新的 Docker 容器。</li>
-<li><code>-d</code>：在后台运行容器，即“detached”模式。</li>
-<li><code>--name neo4j</code>：将容器命名为 <code>neo4j</code>。</li>
-<li><code>-p 7474:7474</code>：将宿主机的 7474 端口映射到容器的 7474 端口，用于 Neo4j HTTP 接口。</li>
-<li><code>-p 7687:7687</code>：将宿主机的 7687 端口映射到容器的 7687 端口，用于 Neo4j Bolt 协议接口。</li>
-<li><code>-v /data1/neo4j/data:/data</code>：将宿主机的 <code>/data1/neo4j/data</code> 目录映射到容器的 <code>/data</code> 目录，用于存储数据库文件。</li>
-<li><code>-v /data1/neo4j/logs:/logs</code>：将宿主机的 <code>/data1/neo4j/logs</code> 目录映射到容器的 <code>/logs</code> 目录，用于存储日志文件。</li>
-<li><code>-v /data1/neo4j/conf:/var/lib/neo4j/conf</code>：将宿主机的 <code>/data1/neo4j/conf</code> 目录映射到容器的 <code>/var/lib/neo4j/conf</code> 目录，用于存储配置文件。</li>
-<li><code>-v /data1/neo4j/import:/var/lib/neo4j/import</code>：将宿主机的 <code>/data1/neo4j/import</code> 目录映射到容器的 <code>/var/lib/neo4j/import</code> 目录，用于导入文件。</li>
-<li><code>--env NEO4J_AUTH=neo4j/xxxxxx</code>：设置环境变量 <code>NEO4J_AUTH</code>，指定 Neo4j 的认证方式（用户名为neo4j，密码为 <code>xxxxxx</code>）。</li>
-<li><code>neo4j:4.4.35-community</code>：指定要运行的 Neo4j 社区版镜像的具体版本 <code>4.4.35</code>。</li>
-</ul>
-<h3 id="修改配置文件-允许远程登陆"><a href="#修改配置文件-允许远程登陆" class="headerlink" title="修改配置文件&#x2F;允许远程登陆"></a>修改配置文件&#x2F;允许远程登陆</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim /data1/neo4j/conf/neo4j.conf</span><br><span class="line">// 指定连接器的默认监听ip为0.0.0.0，即允许任何ip连接到数据库</span><br><span class="line">dbms.connectors.default_listen_address=0.0.0.0</span><br><span class="line">dbms.connector.bolt.listen_address=0.0.0.0:7687</span><br><span class="line">dbms.connector.http.listen_address=0.0.0.0:7474</span><br></pre></td></tr></table></figure>
 
-<h1 id="三、可视化客户端下载"><a href="#三、可视化客户端下载" class="headerlink" title="三、可视化客户端下载"></a>三、可视化客户端下载</h1><p><a href="https://neo4j.com/download/">Neo4j Download</a></p>
+
+
+
+
+
+
+
+
 ]]></content>
       <categories>
-        <category>数据组件</category>
+        <category>面试题</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>一些常用的 Hive 时间日期函数</title>
+    <url>/2024/07/30/hive-function/</url>
+    <content><![CDATA[<p><strong>参考文档：</strong></p>
+<ul>
+<li><p><a href="https://nightlies.apache.org/flink/flink-docs-release-1.19/zh/docs/dev/table/functions/systemfunctions/#%E6%97%B6%E9%97%B4%E5%87%BD%E6%95%B0">Flink时间日期函数</a></p>
+</li>
+<li><p><a href="https://cwiki.apache.org/confluence/display/Hive/Hive+UDFs#HiveUDFs-DateFunctions">HiveUDFs-DateFunctions</a></p>
+</li>
+</ul>
+<h3 id="日期和时间的提取"><a href="#日期和时间的提取" class="headerlink" title="日期和时间的提取"></a>日期和时间的提取</h3><ul>
+<li><p><code>CURRENT_DATE</code>: 返回当前日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CURRENT_DATE</span>;</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-30</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>CURRENT_TIMESTAMP</code>: 返回当前时间戳。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CURRENT_TIMESTAMP</span>;</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-30</span> <span class="number">22</span>:<span class="number">10</span>:<span class="number">10.816</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<span id="more"></span>
+
+<ul>
+<li><p><code>UNIX_TIMESTAMP([string date])</code>: 将日期字符串转换为Unix时间戳（秒数）。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> UNIX_TIMESTAMP(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">1722227696</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>FROM_UNIXTIME(int)</code>: 将Unix时间戳转换为日期字符串。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1627568496</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">2021</span><span class="number">-07</span><span class="number">-29</span> <span class="number">22</span>:<span class="number">21</span>:<span class="number">36</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>TO_DATE(string timestamp)</code>: 将时间戳字符串转换为日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_DATE(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-29</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="日期的格式化和转换"><a href="#日期的格式化和转换" class="headerlink" title="日期的格式化和转换"></a>日期的格式化和转换</h3><ul>
+<li><p><code>DATE_FORMAT(date/timestamp/string ts, string fmt)</code>: 将日期、时间戳或日期字符串格式化为指定的字符串格式。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_FORMAT(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>CAST(expression AS date)</code>: 将表达式转换为日期类型。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CAST</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span> <span class="keyword">AS</span> <span class="type">date</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CAST</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span> <span class="keyword">AS</span> <span class="type">TIMESTAMP</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>TO_DATE(string timestamp)</code>: 将时间戳字符串转换为日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_DATE(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Flink:</code> <code>TO_TIMESTAMP(string date)</code>将日期字符串转换为时间戳。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_TIMESTAMP(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="日期计算"><a href="#日期计算" class="headerlink" title="日期计算"></a>日期计算</h3><ul>
+<li><p><code>DATE_ADD(date/timestamp startdate, int days)</code>: 返回指定日期加上若干天后的日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_ADD(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>DATE_SUB(date/timestamp startdate, int days)</code>: 返回指定日期减去若干天后的日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_SUB(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>DATEDIFF(string enddate, string startdate)</code>: 返回两个日期之间的天数差。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATEDIFF(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="string">&#x27;2024-07-25&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="日期部分提取"><a href="#日期部分提取" class="headerlink" title="日期部分提取"></a>日期部分提取</h3><ul>
+<li><p><code>YEAR(date/timestamp/string)</code>: 返回日期的年份部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">YEAR</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>MONTH(date/timestamp/string)</code>: 返回日期的月份部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">MONTH</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>DAY(date/timestamp/string)</code>: 返回日期的天数部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DAY</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>HOUR(date/timestamp/string)</code>: 返回时间的小时部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">HOUR</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>MINUTE(date/timestamp/string)</code>: 返回时间的分钟部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">MINUTE</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>SECOND(date/timestamp/string)</code>: 返回时间的秒数部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">SECOND</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>基础知识整理</category>
       </categories>
       <tags>
-        <tag>数据库</tag>
-        <tag>图数据库</tag>
-        <tag>neo4j</tag>
+        <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo+Next主题博客搭建记录</title>
+    <url>/2024/07/16/blog/</url>
+    <content><![CDATA[<p><strong>安装：</strong></p>
+<p><a href="https://hexo.io/zh-cn/">Hexo</a></p>
+<p><strong>主题美化：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-theme-next</span><br></pre></td></tr></table></figure>
+<p><a href="https://theme-next.js.org/docs/getting-started/">官方手册</a><br><a href="https://marmalade.vip/nextthemebeautify1.html">Hexo+NexT(v7.72)博客主题美化，打造“超炫”网站（一） | Marmalade’s Blog</a><br><a href="https://cloud.tencent.com/developer/article/2317861">Hexo的Next主题优化教程-腾讯云开发者社区-腾讯云</a></p>
+<span id="more"></span>
+
+<p><strong>GitHub页脚：</strong></p>
+<p><a href="https://tholman.com/github-corners/">GitHub Corners</a></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim layout/_layout.njk</span><br><span class="line">在 &lt;div class=&quot;headband&quot;&gt;&lt;/div&gt; 下新增代码</span><br></pre></td></tr></table></figure>
+
+<p><strong>页面初始化：</strong><br><a href="https://cs-cshi.github.io/hexo-blog/Hexo-NexT%20%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E3%80%81%E6%A0%87%E7%AD%BE/">设置关于、标签、分类</a></p>
+<p><a href="https://enfangzhong.github.io/2019/12/08/Hexo%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%8B%E9%93%BE%E9%A1%B5%E9%9D%A2/">增加友情链接</a></p>
+<p><strong>评论系统：</strong><br><a href="https://waline.js.org/guide/get-started/">快速上手</a><br><a href="https://waline.js.org/guide/features/notification.html">评论通知</a><br><a href="https://vercel.com/">服务部署管理</a></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install @waline/hexo-next</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Waline</span><br><span class="line"># For more information: https://waline.js.org, https://github.com/walinejs/waline</span><br><span class="line">waline:</span><br><span class="line">  enable: true #是否开启</span><br><span class="line">  serverURL: waline.imfine.cloud # Waline #服务端地址，注意:Vercel域名被墙，需自行绑定自己域名</span><br><span class="line">  placeholder: 请文明评论 # #评论框的默认文字</span><br><span class="line">  avatar: mm # 头像风格</span><br><span class="line">  meta: [nick, mail, link] # 自定义评论框上面的三个输入框的内容</span><br><span class="line">  pageSize: 10 # 评论数量多少时显示分页</span><br><span class="line">  lang: zh-cn # 语言, 可选值: en, zh-cn</span><br><span class="line">  # Warning: 不要同时启用 `waline.visitor` 以及 `leancloud_visitors`.</span><br><span class="line">  visitor: false # 文章阅读统计</span><br><span class="line">  comment_count: true # 如果为 false , 评论数量只会在当前评论页面显示, 主页则不显示</span><br><span class="line">  requiredFields: [nick, mail] # 设置用户评论时必填的信息，[nick,mail]: [nick] | [nick, mail]</span><br><span class="line">  libUrl: # Set custom library cdn url</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>服务管理：</strong><br><a href="https://waline.imfine.cloud/">评论后端服务</a></p>
+<p><a href="https://tongji.baidu.com/main/overview/10000638187/overview/index?siteId=20756616">百度统计</a></p>
+<p><strong>域名绑定：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在 source 目录下新建 CNAME 文件，域名填写其中</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>添加阅读全文按钮</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">文章中需要截断的位置增加</span><br><span class="line">&lt;!--more --&gt;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>常用操作：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">本地：hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</span><br><span class="line">远程：hexo clean &amp;&amp; hexo g &amp;&amp; hexo deploy</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ hexo new [layout] &lt;title&gt;</span><br><span class="line"></span><br><span class="line">post是默认的布局，但你也可以提供自己的布局。 您可以通过编辑 _config.yml 中的 default_layout 设置来更改默认布局。</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>实用工具</category>
+      </categories>
+      <tags>
+        <tag>日常</tag>
       </tags>
   </entry>
   <entry>
@@ -84,10 +191,17 @@
 </li>
 </ol>
 <h4 id="概率计算："><a href="#概率计算：" class="headerlink" title="概率计算："></a>概率计算：</h4><ul>
-<li><strong>小李的生存概率</strong>：<ul>
-<li>小黄击中小林（50%）的情况下：<ul>
-<li>小李击中小黄的概率：30% × 50% &#x3D; 15%</li>
+<li><p><strong>小黄击中小林（50%）的情况下：</strong></p>
+<ul>
+<li>小李击中小黄概率：30% × 50% &#x3D; 15%</li>
 <li>小黄击中小李的概率：70% × 50% &#x3D; 35%</li>
+</ul>
+</li>
+<li><p><strong>小李的生存概率</strong>：</p>
+<ul>
+<li>小黄击中小林（50%）的情况下：<ul>
+<li>小李击中小黄的概率：50% x 30% × 50% &#x3D; 7.5%</li>
+<li>小黄击中小李的概率：50% x 70% × 50% &#x3D; 17.5%</li>
 </ul>
 </li>
 <li>小黄未击中小林（50%）的情况下：<ul>
@@ -96,7 +210,8 @@
 </li>
 </ul>
 </li>
-<li><strong>小黄的生存概率</strong>：<ul>
+<li><p><strong>小黄的生存概率</strong>：</p>
+<ul>
 <li>小黄击中小林（50%）的情况下：<ul>
 <li>小黄的生存概率：70%（小李射偏） × 50% &#x3D; 35%</li>
 </ul>
@@ -104,7 +219,8 @@
 <li>小黄未击中小林（50%）的情况下，小林击中他，生存概率为0。</li>
 </ul>
 </li>
-<li><strong>小林的生存概率</strong>：<ul>
+<li><p><strong>小林的生存概率</strong>：</p>
+<ul>
 <li>小黄未击中小林（50%）的情况下：<ul>
 <li>小林的生存概率：100%</li>
 </ul>
@@ -159,45 +275,51 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo+Next主题博客搭建记录</title>
-    <url>/2024/07/16/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<p><strong>安装：</strong></p>
-<p><a href="https://hexo.io/zh-cn/">Hexo</a></p>
-<p><strong>主题美化：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-theme-next</span><br></pre></td></tr></table></figure>
-<p><a href="https://theme-next.js.org/docs/getting-started/">官方手册</a><br><a href="https://marmalade.vip/nextthemebeautify1.html">Hexo+NexT(v7.72)博客主题美化，打造“超炫”网站（一） | Marmalade’s Blog</a><br><a href="https://cloud.tencent.com/developer/article/2317861">Hexo的Next主题优化教程-腾讯云开发者社区-腾讯云</a></p>
+    <title>Neo4j 图数据库搭建记录</title>
+    <url>/2024/07/23/neo4j/</url>
+    <content><![CDATA[<h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>公司数据团队内部下半年计划有数仓模型进行梳理，治理跨层依赖等场景，需要通过爬虫将数据平台中的依赖关系抓取落地并进行分析。</p>
+<p>针对数仓调度依赖、数据存储等场景，使用图数据库存储和分析有天然的优势。</p>
+<p>在数仓节点&#x2F;边等有限的背景下，结合 <a href="https://db-engines.com/en/ranking/graph+dbms">Graph DBMS</a> 排名，使用热度最高的 Neo4j 社区版单机部署足以满足场景需求，且 Neo4j 发展多年，相关文档较为完善，便于遇到线上问题时查阅排除。</p>
 <span id="more"></span>
 
-<p><strong>GitHub页脚：</strong></p>
-<p><a href="https://tholman.com/github-corners/">GitHub Corners</a></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim layout/_layout.njk</span><br><span class="line">在 &lt;div class=&quot;headband&quot;&gt;&lt;/div&gt; 下新增代码</span><br></pre></td></tr></table></figure>
+<h1 id="二、部署步骤"><a href="#二、部署步骤" class="headerlink" title="二、部署步骤"></a>二、部署步骤</h1><p>通过 Docker 部署：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name neo4j \</span><br><span class="line">-p 7474:7474 \</span><br><span class="line">-p 7687:7687 \</span><br><span class="line">-v /data1/neo4j/data:/data \</span><br><span class="line">-v /data1/neo4j/logs:/logs \</span><br><span class="line">-v /data1/neo4j/conf:/var/lib/neo4j/conf \</span><br><span class="line">-v /data1/neo4j/import:/var/lib/neo4j/import \</span><br><span class="line">--env NEO4J_AUTH=neo4j/bigdata \</span><br><span class="line">neo4j:4.4.35-community</span><br></pre></td></tr></table></figure>
 
-<p><strong>页面初始化：</strong><br><a href="https://cs-cshi.github.io/hexo-blog/Hexo-NexT%20%E6%B7%BB%E5%8A%A0%E5%88%86%E7%B1%BB%E3%80%81%E6%A0%87%E7%AD%BE/">设置关于、标签、分类</a></p>
-<p><a href="https://enfangzhong.github.io/2019/12/08/Hexo%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%8B%E9%93%BE%E9%A1%B5%E9%9D%A2/">增加友情链接</a></p>
-<p><strong>评论系统：</strong><br><a href="https://waline.js.org/guide/get-started/">快速上手</a><br><a href="https://waline.js.org/guide/features/notification.html">评论通知</a><br><a href="https://vercel.com/">服务部署管理</a></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install @waline/hexo-next</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Waline</span><br><span class="line"># For more information: https://waline.js.org, https://github.com/walinejs/waline</span><br><span class="line">waline:</span><br><span class="line">  enable: true #是否开启</span><br><span class="line">  serverURL: waline.imfine.cloud # Waline #服务端地址，注意:Vercel域名被墙，需自行绑定自己域名</span><br><span class="line">  placeholder: 请文明评论 # #评论框的默认文字</span><br><span class="line">  avatar: mm # 头像风格</span><br><span class="line">  meta: [nick, mail, link] # 自定义评论框上面的三个输入框的内容</span><br><span class="line">  pageSize: 10 # 评论数量多少时显示分页</span><br><span class="line">  lang: zh-cn # 语言, 可选值: en, zh-cn</span><br><span class="line">  # Warning: 不要同时启用 `waline.visitor` 以及 `leancloud_visitors`.</span><br><span class="line">  visitor: false # 文章阅读统计</span><br><span class="line">  comment_count: true # 如果为 false , 评论数量只会在当前评论页面显示, 主页则不显示</span><br><span class="line">  requiredFields: [nick, mail] # 设置用户评论时必填的信息，[nick,mail]: [nick] | [nick, mail]</span><br><span class="line">  libUrl: # Set custom library cdn url</span><br></pre></td></tr></table></figure>
+<h3 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h3><ul>
+<li><code>docker run</code>：启动一个新的 Docker 容器。</li>
+<li><code>-d</code>：在后台运行容器，即“detached”模式。</li>
+<li><code>--name neo4j</code>：将容器命名为 <code>neo4j</code>。</li>
+<li><code>-p 7474:7474</code>：将宿主机的 7474 端口映射到容器的 7474 端口，用于 Neo4j HTTP 接口。</li>
+<li><code>-p 7687:7687</code>：将宿主机的 7687 端口映射到容器的 7687 端口，用于 Neo4j Bolt 协议接口。</li>
+<li><code>-v /data1/neo4j/data:/data</code>：将宿主机的 <code>/data1/neo4j/data</code> 目录映射到容器的 <code>/data</code> 目录，用于存储数据库文件。</li>
+<li><code>-v /data1/neo4j/logs:/logs</code>：将宿主机的 <code>/data1/neo4j/logs</code> 目录映射到容器的 <code>/logs</code> 目录，用于存储日志文件。</li>
+<li><code>-v /data1/neo4j/conf:/var/lib/neo4j/conf</code>：将宿主机的 <code>/data1/neo4j/conf</code> 目录映射到容器的 <code>/var/lib/neo4j/conf</code> 目录，用于存储配置文件。</li>
+<li><code>-v /data1/neo4j/import:/var/lib/neo4j/import</code>：将宿主机的 <code>/data1/neo4j/import</code> 目录映射到容器的 <code>/var/lib/neo4j/import</code> 目录，用于导入文件。</li>
+<li><code>--env NEO4J_AUTH=neo4j/xxxxxx</code>：设置环境变量 <code>NEO4J_AUTH</code>，指定 Neo4j 的认证方式（用户名为neo4j，密码为 <code>xxxxxx</code>）。</li>
+<li><code>neo4j:4.4.35-community</code>：指定要运行的 Neo4j 社区版镜像的具体版本 <code>4.4.35</code>。</li>
+</ul>
+<h3 id="修改配置文件-允许远程登陆"><a href="#修改配置文件-允许远程登陆" class="headerlink" title="修改配置文件&#x2F;允许远程登陆"></a>修改配置文件&#x2F;允许远程登陆</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim /data1/neo4j/conf/neo4j.conf</span><br><span class="line">// 指定连接器的默认监听ip为0.0.0.0，即允许任何ip连接到数据库</span><br><span class="line">dbms.connectors.default_listen_address=0.0.0.0</span><br><span class="line">dbms.connector.bolt.listen_address=0.0.0.0:7687</span><br><span class="line">dbms.connector.http.listen_address=0.0.0.0:7474</span><br></pre></td></tr></table></figure>
 
+<h1 id="三、桌面端下载"><a href="#三、桌面端下载" class="headerlink" title="三、桌面端下载"></a>三、桌面端下载</h1><p><a href="https://neo4j.com/download/">Neo4j Download</a></p>
+<h1 id="四、常用查询"><a href="#四、常用查询" class="headerlink" title="四、常用查询"></a>四、常用查询</h1><p>使用教程：<a href="https://www.w3cschool.cn/neo4j/neo4j_cql_introduction.html">w3cschool.cn</a></p>
+<ul>
+<li>查询孤儿节点</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MATCH (n)</span><br><span class="line">WHERE NOT (n)--()</span><br><span class="line">RETURN n</span><br></pre></td></tr></table></figure>
 
-<p><strong>服务管理：</strong><br><a href="https://waline.imfine.cloud/">评论后端服务</a></p>
-<p><a href="https://tongji.baidu.com/main/overview/10000638187/overview/index?siteId=20756616">百度统计</a></p>
-<p><strong>域名绑定：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在 source 目录下新建 CNAME 文件，域名填写其中</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查询孤儿节点数量</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MATCH (n)</span><br><span class="line">WHERE NOT (n)--()</span><br><span class="line">RETURN COUNT(n) AS orphanNodeCount</span><br></pre></td></tr></table></figure>
 
-
-<p><strong>添加阅读全文按钮</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">文章中需要截断的位置增加</span><br><span class="line">&lt;!--more --&gt;</span><br></pre></td></tr></table></figure>
-
-
-<p><strong>常用操作：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">本地：hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</span><br><span class="line">远程：hexo clean &amp;&amp; hexo g &amp;&amp; hexo deploy</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ hexo new [layout] &lt;title&gt;</span><br><span class="line"></span><br><span class="line">post是默认的布局，但你也可以提供自己的布局。 您可以通过编辑 _config.yml 中的 default_layout 设置来更改默认布局。</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>实用工具</category>
+        <category>数据组件</category>
       </categories>
       <tags>
-        <tag>日常</tag>
+        <tag>数据库</tag>
+        <tag>图数据库</tag>
+        <tag>neo4j</tag>
       </tags>
   </entry>
   <entry>
