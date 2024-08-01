@@ -84,6 +84,122 @@
       </tags>
   </entry>
   <entry>
+    <title>一些常用的 Hive 时间日期函数</title>
+    <url>/2024/07/30/hive-function/</url>
+    <content><![CDATA[<p><strong>参考文档：</strong></p>
+<ul>
+<li><p><a href="https://nightlies.apache.org/flink/flink-docs-release-1.19/zh/docs/dev/table/functions/systemfunctions/#%E6%97%B6%E9%97%B4%E5%87%BD%E6%95%B0">Flink时间日期函数</a></p>
+</li>
+<li><p><a href="https://cwiki.apache.org/confluence/display/Hive/Hive+UDFs#HiveUDFs-DateFunctions">HiveUDFs-DateFunctions</a></p>
+</li>
+</ul>
+<span id="more"></span>
+
+<h3 id="日期和时间的提取"><a href="#日期和时间的提取" class="headerlink" title="日期和时间的提取"></a>日期和时间的提取</h3><ul>
+<li><p><code>CURRENT_DATE</code>: 返回当前日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CURRENT_DATE</span>;</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-30</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>CURRENT_TIMESTAMP</code>: 返回当前时间戳。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CURRENT_TIMESTAMP</span>;</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-30</span> <span class="number">22</span>:<span class="number">10</span>:<span class="number">10.816</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>UNIX_TIMESTAMP([string date])</code>: 将日期字符串转换为Unix时间戳（秒数）。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> UNIX_TIMESTAMP(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">1722227696</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>FROM_UNIXTIME(int)</code>: 将Unix时间戳转换为日期字符串。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1627568496</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">2021</span><span class="number">-07</span><span class="number">-29</span> <span class="number">22</span>:<span class="number">21</span>:<span class="number">36</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>TO_DATE(string timestamp)</code>: 将时间戳字符串转换为日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_DATE(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-29</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="日期的格式化和转换"><a href="#日期的格式化和转换" class="headerlink" title="日期的格式化和转换"></a>日期的格式化和转换</h3><ul>
+<li><p><code>DATE_FORMAT(date/timestamp/string ts, string fmt)</code>: 将日期、时间戳或日期字符串格式化为指定的字符串格式。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_FORMAT(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>CAST(expression AS date)</code>: 将表达式转换为日期类型。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CAST</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span> <span class="keyword">AS</span> <span class="type">date</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CAST</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span> <span class="keyword">AS</span> <span class="type">TIMESTAMP</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>TO_DATE(string timestamp)</code>: 将时间戳字符串转换为日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_DATE(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Flink:</code> <code>TO_TIMESTAMP(string date)</code>将日期字符串转换为时间戳。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_TIMESTAMP(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="日期计算"><a href="#日期计算" class="headerlink" title="日期计算"></a>日期计算</h3><ul>
+<li><p><code>DATE_ADD(date/timestamp startdate, int days)</code>: 返回指定日期加上若干天后的日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_ADD(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>DATE_SUB(date/timestamp startdate, int days)</code>: 返回指定日期减去若干天后的日期。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_SUB(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>DATEDIFF(string enddate, string startdate)</code>: 返回两个日期之间的天数差。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATEDIFF(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="string">&#x27;2024-07-25&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="日期部分提取"><a href="#日期部分提取" class="headerlink" title="日期部分提取"></a>日期部分提取</h3><ul>
+<li><p><code>YEAR(date/timestamp/string)</code>: 返回日期的年份部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">YEAR</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>MONTH(date/timestamp/string)</code>: 返回日期的月份部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">MONTH</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>DAY(date/timestamp/string)</code>: 返回日期的天数部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DAY</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>HOUR(date/timestamp/string)</code>: 返回时间的小时部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">HOUR</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>MINUTE(date/timestamp/string)</code>: 返回时间的分钟部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">MINUTE</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>SECOND(date/timestamp/string)</code>: 返回时间的秒数部分。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">SECOND</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>基础知识整理</category>
+      </categories>
+      <tags>
+        <tag>SQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>大模型学习入门- LLM 概述</title>
+    <url>/2024/08/01/llm/</url>
+    <content><![CDATA[<p>“作为人工智能（artificial intelligence，AI）领域的最新成果，GPT-4 和其他 GPT 模型是基于大量数据训练而成的<strong>大语言模型（large language model，LLM）</strong>，它们能够以非常高的准确性识别和生成人类可读的文本。”</p>
+<p>“多亏了 OpenAI 的模型，开发人员现在可以利用<strong>自然语言处理（natural language processing，NLP）</strong>技术创建应用程序，使其以一种曾经只存在于科幻小说中的方式理解我们的需求。”</p>
+<span id="more"></span>
+
+<p>“作为 LLM，GPT-4 和 ChatGPT 是 NLP 领域中最新的模型类型，<strong>NLP 是机器学习和人工智能的一个子领域。</strong>”</p>
+<p>“<strong>机器学习（machine learning，ML）是 AI 的一个子集</strong>。在 ML 中，我们不试图直接实现 AI 系统使用的决策规则。”</p>
+<p>“ML 算法中，<strong>深度学习（deep learning，DL）</strong>算法已经引起了广泛关注。DL 是 ML 的一个分支，专注于受大脑结构启发的算法。这些算法被称为<strong>人工神经网络（artificial neural network，ANN）</strong>。它们可以处理大量的数据，并且在图像识别、语音识别及 NLP 等任务上表现出色。”</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">AI-&gt;ML-&gt;DL（ANN）-&gt;NLP（LLM）</span><br></pre></td></tr></table></figure>
+
+<p><strong>“GPT-4 和 ChatGPT 基于一种特定的神经网络架构，即 Transformer。Transformer 就像阅读机一样，它关注句子或段落的不同部分，以理解其上下文并产生连贯的回答。此外，它还可以理解句子中的单词顺序和上下文意思。这使 Transformer 在语言翻译、问题回答和文本生成等任务中非常有效。”</strong></p>
+<img src="/Users/itudou/Library/Application Support/typora-user-images/image-20240801142927636.png" alt="image-20240801142927636" style="zoom:50%;" />
+
+<p>“NLP 的目标是让计算机能够处理自然语言文本。这个目标涉及诸多任务，如下所述。”</p>
+<ul>
+<li>文本分类</li>
+<li>自动翻译</li>
+<li>问题回答</li>
+<li>文本生成<ul>
+<li>“根据给定的输入文本（称为提示词，prompt）生成连贯且相关的输出文本。”</li>
+</ul>
+</li>
+</ul>
+<p>“LLM 是试图完成文本生成任务的一类 ML 模型。LLM 使计算机能够处理、解释和生成人类语言，从而提高人机交互效率。为了做到这一点，LLM 会分析大量文本数据或基于这些数据进行训练，从而学习句子中各词之间的模式和关系。这个学习过程可以使用各种数据源，包括维基百科、Reddit、成千上万本书，甚至互联网本身。”</p>
+<p>“LLM 的发展可以追溯到几年前。它始于简单的语言模型，如 n-gram 模型。n-gram 模型通过使用词频来根据前面的词预测句子中的下一个词，其预测结果是在训练文本中紧随前面的词出现的频率最高的词。虽然这种方法提供了不错的着手点，但是 n-gram 模型在理解上下文和语法方面仍需改进，因为它有时会生成不连贯的文本。<br>为了提高 n-gram 模型的性能，人们引入了更先进的学习算法，包括循环神经网络（recurrent neural network，RNN）和长短期记忆（long short-term memory，LSTM）网络。与 n-gram 模型相比，这些模型能够学习更长的序列，并且能够更好地分析上下文，但它们在处理大量数据时的效率仍然欠佳。尽管如此，在很长的一段时间里，这些模型算是最高效的，因此在自动翻译等任务中被广泛使用。”</p>
+]]></content>
+      <categories>
+        <category>大模型学习</category>
+      </categories>
+      <tags>
+        <tag>LLM</tag>
+        <tag>大模型</tag>
+        <tag>人工智能</tag>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>逻辑题</title>
     <url>/2024/07/29/logic/</url>
     <content><![CDATA[<h1 id="1）取水问题"><a href="#1）取水问题" class="headerlink" title="1）取水问题"></a>1）取水问题</h1><ul>
@@ -214,141 +330,6 @@
       </tags>
   </entry>
   <entry>
-    <title>大模型学习入门- LLM 概述</title>
-    <url>/2024/08/01/llm/</url>
-    <content><![CDATA[<p>“作为人工智能（artificial intelligence，AI）领域的最新成果，GPT-4 和其他 GPT 模型是基于大量数据训练而成的<strong>大语言模型（large language model，LLM）</strong>，它们能够以非常高的准确性识别和生成人类可读的文本。”</p>
-<p>“多亏了 OpenAI 的模型，开发人员现在可以利用<strong>自然语言处理（natural language processing，NLP）</strong>技术创建应用程序，使其以一种曾经只存在于科幻小说中的方式理解我们的需求。”</p>
-<p>“作为 LLM，GPT-4 和 ChatGPT 是 NLP 领域中最新的模型类型，<strong>NLP 是机器学习和人工智能的一个子领域。</strong>”</p>
-<p>“<strong>机器学习（machine learning，ML）是 AI 的一个子集</strong>。在 ML 中，我们不试图直接实现 AI 系统使用的决策规则。”</p>
-<p>“ML 算法中，<strong>深度学习（deep learning，DL）</strong>算法已经引起了广泛关注。DL 是 ML 的一个分支，专注于受大脑结构启发的算法。这些算法被称为<strong>人工神经网络（artificial neural network，ANN）</strong>。它们可以处理大量的数据，并且在图像识别、语音识别及 NLP 等任务上表现出色。”</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">AI-&gt;ML-&gt;DL（ANN）-&gt;NLP（LLM）</span><br></pre></td></tr></table></figure>
-
-<p><strong>“GPT-4 和 ChatGPT 基于一种特定的神经网络架构，即 Transformer。Transformer 就像阅读机一样，它关注句子或段落的不同部分，以理解其上下文并产生连贯的回答。此外，它还可以理解句子中的单词顺序和上下文意思。这使 Transformer 在语言翻译、问题回答和文本生成等任务中非常有效。”</strong></p>
-<img src="/Users/itudou/Library/Application Support/typora-user-images/image-20240801142927636.png" alt="image-20240801142927636" style="zoom:50%;" />
-
-<p>“NLP 的目标是让计算机能够处理自然语言文本。这个目标涉及诸多任务，如下所述。”</p>
-<ul>
-<li>文本分类</li>
-<li>自动翻译</li>
-<li>问题回答</li>
-<li>文本生成<ul>
-<li>“根据给定的输入文本（称为提示词，prompt）生成连贯且相关的输出文本。”</li>
-</ul>
-</li>
-</ul>
-<p>“LLM 是试图完成文本生成任务的一类 ML 模型。LLM 使计算机能够处理、解释和生成人类语言，从而提高人机交互效率。为了做到这一点，LLM 会分析大量文本数据或基于这些数据进行训练，从而学习句子中各词之间的模式和关系。这个学习过程可以使用各种数据源，包括维基百科、Reddit、成千上万本书，甚至互联网本身。”</p>
-<p>“LLM 的发展可以追溯到几年前。它始于简单的语言模型，如 n-gram 模型。n-gram 模型通过使用词频来根据前面的词预测句子中的下一个词，其预测结果是在训练文本中紧随前面的词出现的频率最高的词。虽然这种方法提供了不错的着手点，但是 n-gram 模型在理解上下文和语法方面仍需改进，因为它有时会生成不连贯的文本。<br>为了提高 n-gram 模型的性能，人们引入了更先进的学习算法，包括循环神经网络（recurrent neural network，RNN）和长短期记忆（long short-term memory，LSTM）网络。与 n-gram 模型相比，这些模型能够学习更长的序列，并且能够更好地分析上下文，但它们在处理大量数据时的效率仍然欠佳。尽管如此，在很长的一段时间里，这些模型算是最高效的，因此在自动翻译等任务中被广泛使用。”</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>一些常用的 Hive 时间日期函数</title>
-    <url>/2024/07/30/hive-function/</url>
-    <content><![CDATA[<p><strong>参考文档：</strong></p>
-<ul>
-<li><p><a href="https://nightlies.apache.org/flink/flink-docs-release-1.19/zh/docs/dev/table/functions/systemfunctions/#%E6%97%B6%E9%97%B4%E5%87%BD%E6%95%B0">Flink时间日期函数</a></p>
-</li>
-<li><p><a href="https://cwiki.apache.org/confluence/display/Hive/Hive+UDFs#HiveUDFs-DateFunctions">HiveUDFs-DateFunctions</a></p>
-</li>
-</ul>
-<span id="more"></span>
-
-<h3 id="日期和时间的提取"><a href="#日期和时间的提取" class="headerlink" title="日期和时间的提取"></a>日期和时间的提取</h3><ul>
-<li><p><code>CURRENT_DATE</code>: 返回当前日期。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CURRENT_DATE</span>;</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-30</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>CURRENT_TIMESTAMP</code>: 返回当前时间戳。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CURRENT_TIMESTAMP</span>;</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-30</span> <span class="number">22</span>:<span class="number">10</span>:<span class="number">10.816</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>UNIX_TIMESTAMP([string date])</code>: 将日期字符串转换为Unix时间戳（秒数）。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> UNIX_TIMESTAMP(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">1722227696</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>FROM_UNIXTIME(int)</code>: 将Unix时间戳转换为日期字符串。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> FROM_UNIXTIME(<span class="number">1627568496</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">2021</span><span class="number">-07</span><span class="number">-29</span> <span class="number">22</span>:<span class="number">21</span>:<span class="number">36</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>TO_DATE(string timestamp)</code>: 将时间戳字符串转换为日期。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_DATE(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="number">2024</span><span class="number">-07</span><span class="number">-29</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="日期的格式化和转换"><a href="#日期的格式化和转换" class="headerlink" title="日期的格式化和转换"></a>日期的格式化和转换</h3><ul>
-<li><p><code>DATE_FORMAT(date/timestamp/string ts, string fmt)</code>: 将日期、时间戳或日期字符串格式化为指定的字符串格式。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_FORMAT(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="string">&#x27;yyyy-MM-dd&#x27;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>CAST(expression AS date)</code>: 将表达式转换为日期类型。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CAST</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span> <span class="keyword">AS</span> <span class="type">date</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> <span class="built_in">CAST</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span> <span class="keyword">AS</span> <span class="type">TIMESTAMP</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>TO_DATE(string timestamp)</code>: 将时间戳字符串转换为日期。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_DATE(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>Flink:</code> <code>TO_TIMESTAMP(string date)</code>将日期字符串转换为时间戳。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TO_TIMESTAMP(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="日期计算"><a href="#日期计算" class="headerlink" title="日期计算"></a>日期计算</h3><ul>
-<li><p><code>DATE_ADD(date/timestamp startdate, int days)</code>: 返回指定日期加上若干天后的日期。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_ADD(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>DATE_SUB(date/timestamp startdate, int days)</code>: 返回指定日期减去若干天后的日期。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_SUB(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="number">5</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>DATEDIFF(string enddate, string startdate)</code>: 返回两个日期之间的天数差。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATEDIFF(<span class="string">&#x27;2024-07-29&#x27;</span>, <span class="string">&#x27;2024-07-25&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="日期部分提取"><a href="#日期部分提取" class="headerlink" title="日期部分提取"></a>日期部分提取</h3><ul>
-<li><p><code>YEAR(date/timestamp/string)</code>: 返回日期的年份部分。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">YEAR</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>MONTH(date/timestamp/string)</code>: 返回日期的月份部分。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">MONTH</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>DAY(date/timestamp/string)</code>: 返回日期的天数部分。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">DAY</span>(<span class="string">&#x27;2024-07-29&#x27;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>HOUR(date/timestamp/string)</code>: 返回时间的小时部分。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">HOUR</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>MINUTE(date/timestamp/string)</code>: 返回时间的分钟部分。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">MINUTE</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>SECOND(date/timestamp/string)</code>: 返回时间的秒数部分。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">SECOND</span>(<span class="string">&#x27;2024-07-29 12:34:56&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-      <categories>
-        <category>基础知识整理</category>
-      </categories>
-      <tags>
-        <tag>SQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>常用工具梳理（文档服务/文件服务）</title>
-    <url>/2024/07/29/tools/</url>
-    <content><![CDATA[<h1 id="一、文件服务器"><a href="#一、文件服务器" class="headerlink" title="一、文件服务器"></a>一、文件服务器</h1><p><a href="https://github.com/codeskyblue/gohttpserver">gohttpserver</a> 是一个简单易于部署的 HTTP 文件服务，支持权限控制，OpenID 接入。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d -p 16666:8000 -v /data/file-server:/app/public --name gohttpserver codeskyblue/gohttpserver --upload --delete</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h3><ul>
-<li><code>docker run</code>：这是 Docker 命令，用于运行一个新的容器。</li>
-<li><code>-d</code>：表示以分离模式（detached mode）运行容器。容器将在后台运行，你不会看到其输出。</li>
-<li><code>-p 16666:8000</code>：将宿主机的端口 16666 映射到容器内的端口 8000。这意味着你可以通过访问宿主机的 <code>http://localhost:16666</code> 来访问容器内运行的服务。</li>
-<li><code>-v /data/file-server:/app/public</code>：将宿主机目录 <code>/data/file-server</code> 挂载到容器内的 <code>/app/public</code> 目录。这样，容器内的 <code>/app/public</code> 目录会对应宿主机上的 <code>/data/file-server</code> 目录。所有在容器中上传或删除的文件都会反映到宿主机上的该目录。</li>
-<li><code>--name gohttpserver</code>：为容器指定一个名字 <code>gohttpserver</code>。你可以通过这个名字来管理该容器。</li>
-<li><code>codeskyblue/gohttpserver</code>：这是要运行的 Docker 镜像的名称。<code>codeskyblue/gohttpserver</code> 是一个开源的基于 Go 语言的 HTTP 文件服务器。</li>
-<li><code>--upload</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件上传功能。</li>
-<li><code>--delete</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件删除功能。</li>
-</ul>
-<h1 id="二、文档服务器"><a href="#二、文档服务器" class="headerlink" title="二、文档服务器"></a>二、文档服务器</h1><p><a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material</a> 是 MkDocs 之上的一个强大的文档框架，可以根据项目文档生成静态站点。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -p 8000:8000 -v /home/document/:/docs squidfunk/mkdocs-material</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>实用工具</category>
-      </categories>
-      <tags>
-        <tag>HTTP文件服务器</tag>
-        <tag>文档服务器</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Neo4j 图数据库搭建记录</title>
     <url>/2024/07/23/neo4j/</url>
     <content><![CDATA[<h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>公司数据团队内部下半年计划有数仓模型进行梳理，治理跨层依赖等场景，需要通过爬虫将数据平台中的依赖关系抓取落地并进行分析。</p>
@@ -394,6 +375,36 @@
         <tag>数据库</tag>
         <tag>图数据库</tag>
         <tag>neo4j</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>常用工具梳理（文档服务/文件服务）</title>
+    <url>/2024/07/29/tools/</url>
+    <content><![CDATA[<h1 id="一、文件服务器"><a href="#一、文件服务器" class="headerlink" title="一、文件服务器"></a>一、文件服务器</h1><p><a href="https://github.com/codeskyblue/gohttpserver">gohttpserver</a> 是一个简单易于部署的 HTTP 文件服务，支持权限控制，OpenID 接入。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d -p 16666:8000 -v /data/file-server:/app/public --name gohttpserver codeskyblue/gohttpserver --upload --delete</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h3><ul>
+<li><code>docker run</code>：这是 Docker 命令，用于运行一个新的容器。</li>
+<li><code>-d</code>：表示以分离模式（detached mode）运行容器。容器将在后台运行，你不会看到其输出。</li>
+<li><code>-p 16666:8000</code>：将宿主机的端口 16666 映射到容器内的端口 8000。这意味着你可以通过访问宿主机的 <code>http://localhost:16666</code> 来访问容器内运行的服务。</li>
+<li><code>-v /data/file-server:/app/public</code>：将宿主机目录 <code>/data/file-server</code> 挂载到容器内的 <code>/app/public</code> 目录。这样，容器内的 <code>/app/public</code> 目录会对应宿主机上的 <code>/data/file-server</code> 目录。所有在容器中上传或删除的文件都会反映到宿主机上的该目录。</li>
+<li><code>--name gohttpserver</code>：为容器指定一个名字 <code>gohttpserver</code>。你可以通过这个名字来管理该容器。</li>
+<li><code>codeskyblue/gohttpserver</code>：这是要运行的 Docker 镜像的名称。<code>codeskyblue/gohttpserver</code> 是一个开源的基于 Go 语言的 HTTP 文件服务器。</li>
+<li><code>--upload</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件上传功能。</li>
+<li><code>--delete</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件删除功能。</li>
+</ul>
+<h1 id="二、文档服务器"><a href="#二、文档服务器" class="headerlink" title="二、文档服务器"></a>二、文档服务器</h1><p><a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material</a> 是 MkDocs 之上的一个强大的文档框架，可以根据项目文档生成静态站点。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -p 8000:8000 -v /home/document/:/docs squidfunk/mkdocs-material</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>实用工具</category>
+      </categories>
+      <tags>
+        <tag>HTTP文件服务器</tag>
+        <tag>文档服务器</tag>
       </tags>
   </entry>
 </search>
