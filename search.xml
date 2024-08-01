@@ -174,7 +174,7 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">AI-&gt;ML-&gt;DL（ANN）-&gt;NLP（LLM）</span><br></pre></td></tr></table></figure>
 
 <p><strong>“GPT-4 和 ChatGPT 基于一种特定的神经网络架构，即 Transformer。Transformer 就像阅读机一样，它关注句子或段落的不同部分，以理解其上下文并产生连贯的回答。此外，它还可以理解句子中的单词顺序和上下文意思。这使 Transformer 在语言翻译、问题回答和文本生成等任务中非常有效。”</strong></p>
-<img src="/Users/itudou/Library/Application Support/typora-user-images/image-20240801142927636.png" alt="image-20240801142927636" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/fine97/file-server/main/images/20240801151721.png" style="zoom:50%;" />
 
 <p>“NLP 的目标是让计算机能够处理自然语言文本。这个目标涉及诸多任务，如下所述。”</p>
 <ul>
