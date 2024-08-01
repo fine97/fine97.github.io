@@ -1,6 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>大模型学习入门- LLM 概述</title>
+    <url>/2024/08/01/llm/</url>
+    <content><![CDATA[<h2 id="探索语言模型和-NLP-的基础"><a href="#探索语言模型和-NLP-的基础" class="headerlink" title="探索语言模型和 NLP 的基础"></a>探索语言模型和 NLP 的基础</h2><p>作为人工智能（artificial intelligence，AI）领域的最新成果，GPT-4 和其他 GPT 模型是基于大量数据训练而成的<strong>大语言模型（large language model，LLM）</strong>，它们能够以非常高的准确性识别和生成人类可读的文本。</p>
+<p>多亏了 OpenAI 的模型，开发人员现在可以利用<strong>自然语言处理（natural language processing，NLP）</strong>技术创建应用程序，使其以一种曾经只存在于科幻小说中的方式理解我们的需求。</p>
+<span id="more"></span>
+
+<p>作为 LLM，GPT-4 和 ChatGPT 是 NLP 领域中最新的模型类型，**NLP 是机器学习和人工智能的一个子领域。</p>
+<p><strong>机器学习（machine learning，ML）是 AI 的一个子集</strong>。在 ML 中，我们不试图直接实现 AI 系统使用的决策规则。</p>
+<p>ML 算法中，<strong>深度学习（deep learning，DL）</strong>算法已经引起了广泛关注。DL 是 ML 的一个分支，专注于受大脑结构启发的算法。这些算法被称为<strong>人工神经网络（artificial neural network，ANN）</strong>。它们可以处理大量的数据，并且在图像识别、语音识别及 NLP 等任务上表现出色。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">AI-&gt;ML-&gt;DL（ANN）-&gt;NLP（LLM）</span><br></pre></td></tr></table></figure>
+
+<p><strong>GPT-4 和 ChatGPT 基于一种特定的神经网络架构，即 Transformer。Transformer 就像阅读机一样，它关注句子或段落的不同部分，以理解其上下文并产生连贯的回答。此外，它还可以理解句子中的单词顺序和上下文意思。这使 Transformer 在语言翻译、问题回答和文本生成等任务中非常有效。</strong></p>
+<img src="https://raw.githubusercontent.com/fine97/file-server/main/images/20240801151721.png" style="zoom: 33%;" />
+
+<p>NLP 的目标是让计算机能够处理自然语言文本。这个目标涉及诸多任务，如下所述。</p>
+<ul>
+<li>文本分类</li>
+<li>自动翻译</li>
+<li>问题回答</li>
+<li>文本生成<ul>
+<li>根据给定的输入文本（称为提示词，prompt）生成连贯且相关的输出文本。</li>
+</ul>
+</li>
+</ul>
+<p>LLM 是试图完成文本生成任务的一类 ML 模型。LLM 使计算机能够处理、解释和生成人类语言，从而提高人机交互效率。为了做到这一点，LLM 会分析大量文本数据或基于这些数据进行训练，从而学习句子中各词之间的模式和关系。这个学习过程可以使用各种数据源，包括维基百科、Reddit、成千上万本书，甚至互联网本身。</p>
+<p>LLM 的发展可以追溯到几年前。它<strong>始于简单的语言模型，如 n-gram 模型</strong>。n-gram 模型<strong>通过使用词频来根据前面的词预测句子中的下一个词，其预测结果是在训练文本中紧随前面的词出现的频率最高的词。</strong>虽然这种方法提供了不错的着手点，但是 n-gram 模型在理解上下文和语法方面仍需改进，因为它有时会生成不连贯的文本。<br>为了提高 n-gram 模型的性能，人们引入了更先进的学习算法，包括<strong>循环神经网络（recurrent neural network，RNN）和长短期记忆（long short-term memory，LSTM）网络</strong>。与 n-gram 模型相比，<strong>这些模型能够学习更长的序列，并且能够更好地分析上下文，但它们在处理大量数据时的效率仍然欠佳</strong>。尽管如此，在很长的一段时间里，这些模型算是最高效的，因此在自动翻译等任务中被广泛使用。</p>
+<h2 id="理解-Transformer-架构及其在-LLM-中的作用"><a href="#理解-Transformer-架构及其在-LLM-中的作用" class="headerlink" title="理解 Transformer 架构及其在 LLM 中的作用"></a>理解 Transformer 架构及其在 LLM 中的作用</h2><p><strong>Transformer 架构</strong>彻底改变了 NLP 领域，这主要是因为它能够有效地解决之前的 NLP 模型（如 RNN）存在的一个关键问题：很难处理长文本序列并记住其上下文。</p>
+<p><strong>Transformer 架构 核心支柱是注意力机制</strong>，这是一个简单而又强大的机制。模型<strong>不再将文本序列中的所有词视为同等重要</strong>，而是<strong>在任务的每个步骤中关注最相关的词</strong>。<strong>交叉注意力和自注意力是基于注意力机制的两个架构模块</strong>，它们经常出现在 LLM 中。Transformer 架构广泛使用了交叉注意力模块和自注意力模块。</p>
+<p><strong>交叉注意力有助于模型确定输入文本的不同部分与输出文本中下一个词的相关性。它就像一盏聚光灯，照亮输入文本中的词或短语，并突出显示预测下一个词所需的相关信息，同时忽略不重要的细节。</strong></p>
+<p>以一个简单的句子翻译任务为例。假设输入文本是这样一个英语句子：Alice enjoyed the sunny weather in Brussels（Alice 很享受布鲁塞尔阳光明媚的天气）。如果目标语言是法语，那么输出文本应该是：Alice a profité du temps ensoleillé à Bruxelles。在这个例子中，让我们专注于生成法语单词 ensoleillé，它对应原句中的 sunny。对于这个预测任务，<strong>交叉注意力模块会更关注英语单词 sunny 和 weather</strong>，因为它们都与 ensoleillé 相关。通过关注这两个单词，交叉注意力模块有助于模型为句子的这一部分生成准确的翻译结果。</p>
+<img src="https://raw.githubusercontent.com/fine97/file-server/main/images/image-20240801162316330.png" alt="image-20240801162316330" style="zoom:67%;" />
+
+<p><strong>自注意力机制是指模型能够关注其输入文本的不同部分。</strong>具体到 NLP 领域，自注意力机制使模型<strong>能够评估句子中的每个词相比于其他词的重要性</strong>。这使得模型能够更好地理解各词之间的关系，并根据输入文本中的多个词构建新概念。</p>
+<p>来看一个更具体的例子。考虑以下句子：Alice received praise from her colleagues（Alice 受到同事的赞扬）。假设模型试图理解 her 这个单词的意思。自注意力机制给句子中的每个单词分配不同的权重，突出在这个上下文中与 her 相关的单词。在本例中，<strong>自注意力机制会更关注 Alice 和 colleagues 这两个单词</strong>。如前所述，自注意力机制帮助模型根据这些单词构建新概念。在本例中，可能出现的一个新概念是 Alice’s colleagues。</p>
+<img src="https://raw.githubusercontent.com/fine97/file-server/main/images/image-20240801163327169.png" alt="image-20240801163327169" style="zoom: 67%;" />
+
+<p>与 RNN 不同，Transformer 架构具有易于并行化的优势。这意味着 Transformer 架构可以同时处理输入文本的多个部分，而无须顺序处理。这样做可以提高计算速度和训练速度，因为模型的不同部分可以并行工作，而无须等待前一步骤完成。基于 Transformer 架构的模型所具备的并行处理能力与<strong>图形处理单元</strong>（graphics processing unit，GPU）的架构完美契合，后者专用于同时处理多个计算任务。由于高度的并行性和强大的计算能力，GPU 非常适合用于训练和运行基于 Transformer 架构的模型。硬件上的这一进展使数据科学家能够在大型数据集上训练模型，从而为开发 LLM 铺平了道路。<br>“Transformer 架构由来自谷歌公司的 Ashish Vaswani 等人在 2017 年的论文“Attention Is All You Need”中提出，最初用于序列到序列的任务，如机器翻译任务。标准的 Transformer 架构有两个主要组件：编码器和解码器，两者都十分依赖注意力机制。编码器的任务是处理输入文本，识别有价值的特征，并生成有意义的文本表示，称为<strong>嵌入</strong>（embedding）。解码器使用这个嵌入来生成一个输出，比如翻译结果或摘要文本。这个输出有效地解释了编码信息。</p>
+<p><strong>生成式预训练 Transformer</strong>（Generative Pre-trained Transformer，GPT）是一类基于 Transformer 架构的模型，专门利用原始架构中的解码器部分。在 GPT 中，不存在编码器，因此无须通过交叉注意力机制来整合编码器产生的嵌入。也就是说，GPT 仅依赖解码器内部的自注意力机制来生成上下文感知的表示和预测结果。请注意，BERT 等其他一些众所周知的模型基于编码器部分，但本书不涉及这类模型。</p>
+<p><img src="https://raw.githubusercontent.com/fine97/file-server/main/images/image-20240801163719137.png" alt="image-20240801163719137"></p>
+<h2 id="解密-GPT-模型的标记化和预测步骤"><a href="#解密-GPT-模型的标记化和预测步骤" class="headerlink" title="解密 GPT 模型的标记化和预测步骤"></a>解密 GPT 模型的标记化和预测步骤</h2><p>GPT 模型接收一段提示词作为输入，然后生成一段文本作为输出。这个过程被称为<strong>文本补全</strong>。举例来说，提示词可以是 The weather is nice today, so I decided to（今天天气很好，所以我决定），模型的输出则可能是 go for a walk（去散步）。你可能想知道 GPT 模型是如何根据输入的提示词构建输出文本的。正如你将看到的，这主要是一个概率问题。<br>当 GPT 模型收到一段提示词之后，它首先将输入拆分成<strong>标记</strong>（token）。这些标记代表单词、单词的一部分、空格或标点符号。比如，在前面的例子中，提示词可以被拆分成［The, wea, ther, is, nice, today,,, so, I, de, ci, ded, to］。<br>几乎每个语言模型都配有自己的分词器。</p>
+<p>理解标记与词长的一条经验法则是，对于英语文本，100 个标记大约等于 75 个单词。</p>
+<p>因为有了注意力机制和 Transformer 架构，LLM 能够轻松处理标记并解释它们之间的关系及提示词的整体含义。Transformer 架构使模型能够高效地识别文本中的关键信息和上下文。</p>
+<p>为了生成新的句子，LLM 根据提示词的上下文预测最有可能出现的下一个标记。OpenAI 开发了两个版本的 GPT-4，上下文窗口大小分别为 8192 个标记和 32 768 个标记。与之前的循环模型不同，带有注意力机制的 Transformer 架构使得 LLM 能够将上下文作为一个整体来考虑。基于这个上下文，模型为每个潜在的后续标记分配一个概率分数，然后选择概率最高的标记作为序列中的下一个标记。在前面的例子中，“今天天气很好，所以我决定”之后，下一个最佳标记可能是“去”。</p>
+<blockquote>
+<p>“截至 2023 年 11 月下旬，OpenAI 已提供 6 个 GPT-4 模型，包括 gpt-4-1106-preview、gpt-4-vision-preview、gpt-4、gpt-4-32k、gpt-4-0613、gpt-4-32k-0613，其中 gpt-4-1106-preview 的上下文窗口已增加至 16 385 个标记。</p>
+</blockquote>
+<p>接下来重复此过程，但现在上下文变为“今天天气很好，所以我决定去”，之前预测的标记“去”被添加到原始提示词中。这个过程会一直重复，直到形成一个完整的句子：“今天天气很好，所以我决定去散步。”这个过程依赖于 LLM 学习从大量文本数据中预测下一个最有可能出现的单词的能力。</p>
+<p><img src="https://raw.githubusercontent.com/fine97/file-server/main/images/image-20240801164155830.png" alt="image-20240801164155830"></p>
+]]></content>
+      <categories>
+        <category>大模型学习</category>
+      </categories>
+      <tags>
+        <tag>LLM</tag>
+        <tag>大模型</tag>
+        <tag>人工智能</tag>
+        <tag>机器学习</tag>
+        <tag>《大模型应用开发极简入门：基于 GPT-4 和 ChatGPT》</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>大数据常见 SQL 面试题</title>
     <url>/2024/07/30/bigdata-sql/</url>
     <content><![CDATA[<h1 id="一、最大连续活跃天数"><a href="#一、最大连续活跃天数" class="headerlink" title="一、最大连续活跃天数"></a>一、最大连续活跃天数</h1><p>有一张用户在线记录表，表结构如下，使用任意引擎SQL，得出每个user_id，最大的连续活跃天数max_act_day；</p>
@@ -159,44 +220,6 @@
       </categories>
       <tags>
         <tag>SQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>大模型学习入门- LLM 概述</title>
-    <url>/2024/08/01/llm/</url>
-    <content><![CDATA[<p>“作为人工智能（artificial intelligence，AI）领域的最新成果，GPT-4 和其他 GPT 模型是基于大量数据训练而成的<strong>大语言模型（large language model，LLM）</strong>，它们能够以非常高的准确性识别和生成人类可读的文本。”</p>
-<p>“多亏了 OpenAI 的模型，开发人员现在可以利用<strong>自然语言处理（natural language processing，NLP）</strong>技术创建应用程序，使其以一种曾经只存在于科幻小说中的方式理解我们的需求。”</p>
-<span id="more"></span>
-
-<p>“作为 LLM，GPT-4 和 ChatGPT 是 NLP 领域中最新的模型类型，<strong>NLP 是机器学习和人工智能的一个子领域。</strong>”</p>
-<p>“<strong>机器学习（machine learning，ML）是 AI 的一个子集</strong>。在 ML 中，我们不试图直接实现 AI 系统使用的决策规则。”</p>
-<p>“ML 算法中，<strong>深度学习（deep learning，DL）</strong>算法已经引起了广泛关注。DL 是 ML 的一个分支，专注于受大脑结构启发的算法。这些算法被称为<strong>人工神经网络（artificial neural network，ANN）</strong>。它们可以处理大量的数据，并且在图像识别、语音识别及 NLP 等任务上表现出色。”</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">AI-&gt;ML-&gt;DL（ANN）-&gt;NLP（LLM）</span><br></pre></td></tr></table></figure>
-
-<p><strong>“GPT-4 和 ChatGPT 基于一种特定的神经网络架构，即 Transformer。Transformer 就像阅读机一样，它关注句子或段落的不同部分，以理解其上下文并产生连贯的回答。此外，它还可以理解句子中的单词顺序和上下文意思。这使 Transformer 在语言翻译、问题回答和文本生成等任务中非常有效。”</strong></p>
-<img src="https://raw.githubusercontent.com/fine97/file-server/main/images/20240801151721.png" style="zoom:50%;" />
-
-<p>“NLP 的目标是让计算机能够处理自然语言文本。这个目标涉及诸多任务，如下所述。”</p>
-<ul>
-<li>文本分类</li>
-<li>自动翻译</li>
-<li>问题回答</li>
-<li>文本生成<ul>
-<li>“根据给定的输入文本（称为提示词，prompt）生成连贯且相关的输出文本。”</li>
-</ul>
-</li>
-</ul>
-<p>“LLM 是试图完成文本生成任务的一类 ML 模型。LLM 使计算机能够处理、解释和生成人类语言，从而提高人机交互效率。为了做到这一点，LLM 会分析大量文本数据或基于这些数据进行训练，从而学习句子中各词之间的模式和关系。这个学习过程可以使用各种数据源，包括维基百科、Reddit、成千上万本书，甚至互联网本身。”</p>
-<p>“LLM 的发展可以追溯到几年前。它始于简单的语言模型，如 n-gram 模型。n-gram 模型通过使用词频来根据前面的词预测句子中的下一个词，其预测结果是在训练文本中紧随前面的词出现的频率最高的词。虽然这种方法提供了不错的着手点，但是 n-gram 模型在理解上下文和语法方面仍需改进，因为它有时会生成不连贯的文本。<br>为了提高 n-gram 模型的性能，人们引入了更先进的学习算法，包括循环神经网络（recurrent neural network，RNN）和长短期记忆（long short-term memory，LSTM）网络。与 n-gram 模型相比，这些模型能够学习更长的序列，并且能够更好地分析上下文，但它们在处理大量数据时的效率仍然欠佳。尽管如此，在很长的一段时间里，这些模型算是最高效的，因此在自动翻译等任务中被广泛使用。”</p>
-]]></content>
-      <categories>
-        <category>大模型学习</category>
-      </categories>
-      <tags>
-        <tag>LLM</tag>
-        <tag>大模型</tag>
-        <tag>人工智能</tag>
-        <tag>机器学习</tag>
       </tags>
   </entry>
   <entry>
