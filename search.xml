@@ -784,7 +784,7 @@
 <ul>
 <li></li>
 </ul>
-<p><strong>IntelliJ IDEA DEFAULT KEYMAP</strong>：<a href="https://link.juejin.cn/?target=https://www.jetbrains.com/idea/docs/IntelliJIDEA_ReferenceCard_Mac.pdf" title="https://www.jetbrains.com/idea/docs/IntelliJIDEA_ReferenceCard_Mac.pdf">www.jetbrains.com/idea/docs/I…</a></p>
+<p><strong>IntelliJ IDEA DEFAULT KEYMAP</strong>：<a href="https://resources.jetbrains.com/storage/products/intellij-idea/docs/IntelliJIDEA_ReferenceCard.pdf">https://resources.jetbrains.com/......</a></p>
 ]]></content>
       <categories>
         <category>实用工具</category>
@@ -849,84 +849,6 @@
         <tag>人工智能</tag>
         <tag>机器学习</tag>
         <tag>《大模型应用开发极简入门：基于 GPT-4 和 ChatGPT》</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Neo4j 图数据库搭建记录</title>
-    <url>/2024/07/23/neo4j/</url>
-    <content><![CDATA[<h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>公司数据团队内部下半年计划有数仓模型进行梳理，治理跨层依赖等场景，需要通过爬虫将数据平台中的依赖关系抓取落地并进行分析。</p>
-<p>针对数仓调度依赖、数据存储等场景，使用图数据库存储和分析有天然的优势。</p>
-<p>在数仓节点&#x2F;边等有限的背景下，结合 <a href="https://db-engines.com/en/ranking/graph+dbms">Graph DBMS</a> 排名，使用热度最高的 Neo4j 社区版单机部署足以满足场景需求，且 Neo4j 发展多年，相关文档较为完善，便于遇到线上问题时查阅排除。</p>
-<span id="more"></span>
-
-<h1 id="二、部署步骤"><a href="#二、部署步骤" class="headerlink" title="二、部署步骤"></a>二、部署步骤</h1><p>通过 Docker 部署：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name neo4j \</span><br><span class="line">-p 7474:7474 \</span><br><span class="line">-p 7687:7687 \</span><br><span class="line">-v /data1/neo4j/data:/data \</span><br><span class="line">-v /data1/neo4j/logs:/logs \</span><br><span class="line">-v /data1/neo4j/conf:/var/lib/neo4j/conf \</span><br><span class="line">-v /data1/neo4j/import:/var/lib/neo4j/import \</span><br><span class="line">--env NEO4J_AUTH=neo4j/bigdata \</span><br><span class="line">neo4j:4.4.35-community</span><br></pre></td></tr></table></figure>
-
-<h3 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h3><ul>
-<li><code>docker run</code>：启动一个新的 Docker 容器。</li>
-<li><code>-d</code>：在后台运行容器，即“detached”模式。</li>
-<li><code>--name neo4j</code>：将容器命名为 <code>neo4j</code>。</li>
-<li><code>-p 7474:7474</code>：将宿主机的 7474 端口映射到容器的 7474 端口，用于 Neo4j HTTP 接口。</li>
-<li><code>-p 7687:7687</code>：将宿主机的 7687 端口映射到容器的 7687 端口，用于 Neo4j Bolt 协议接口。</li>
-<li><code>-v /data1/neo4j/data:/data</code>：将宿主机的 <code>/data1/neo4j/data</code> 目录映射到容器的 <code>/data</code> 目录，用于存储数据库文件。</li>
-<li><code>-v /data1/neo4j/logs:/logs</code>：将宿主机的 <code>/data1/neo4j/logs</code> 目录映射到容器的 <code>/logs</code> 目录，用于存储日志文件。</li>
-<li><code>-v /data1/neo4j/conf:/var/lib/neo4j/conf</code>：将宿主机的 <code>/data1/neo4j/conf</code> 目录映射到容器的 <code>/var/lib/neo4j/conf</code> 目录，用于存储配置文件。</li>
-<li><code>-v /data1/neo4j/import:/var/lib/neo4j/import</code>：将宿主机的 <code>/data1/neo4j/import</code> 目录映射到容器的 <code>/var/lib/neo4j/import</code> 目录，用于导入文件。</li>
-<li><code>--env NEO4J_AUTH=neo4j/xxxxxx</code>：设置环境变量 <code>NEO4J_AUTH</code>，指定 Neo4j 的认证方式（用户名为neo4j，密码为 <code>xxxxxx</code>）。</li>
-<li><code>neo4j:4.4.35-community</code>：指定要运行的 Neo4j 社区版镜像的具体版本 <code>4.4.35</code>。</li>
-</ul>
-<h3 id="修改配置文件-允许远程登陆"><a href="#修改配置文件-允许远程登陆" class="headerlink" title="修改配置文件&#x2F;允许远程登陆"></a>修改配置文件&#x2F;允许远程登陆</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim /data1/neo4j/conf/neo4j.conf</span><br><span class="line">// 指定连接器的默认监听ip为0.0.0.0，即允许任何ip连接到数据库</span><br><span class="line">dbms.connectors.default_listen_address=0.0.0.0</span><br><span class="line">dbms.connector.bolt.listen_address=0.0.0.0:7687</span><br><span class="line">dbms.connector.http.listen_address=0.0.0.0:7474</span><br></pre></td></tr></table></figure>
-
-<h1 id="三、桌面端下载"><a href="#三、桌面端下载" class="headerlink" title="三、桌面端下载"></a>三、桌面端下载</h1><p><a href="https://neo4j.com/download/">Neo4j Download</a></p>
-<h1 id="四、常用查询"><a href="#四、常用查询" class="headerlink" title="四、常用查询"></a>四、常用查询</h1><p>使用教程：<a href="https://www.w3cschool.cn/neo4j/neo4j_cql_introduction.html">w3cschool.cn</a></p>
-<ul>
-<li>查询孤儿节点</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MATCH (n)</span><br><span class="line">WHERE NOT (n)--()</span><br><span class="line">RETURN n</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>查询孤儿节点数量</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MATCH (n)</span><br><span class="line">WHERE NOT (n)--()</span><br><span class="line">RETURN COUNT(n) AS orphanNodeCount</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>数据组件</category>
-      </categories>
-      <tags>
-        <tag>数据库</tag>
-        <tag>图数据库</tag>
-        <tag>neo4j</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>常用工具梳理（文档服务/文件服务）</title>
-    <url>/2024/07/29/tools/</url>
-    <content><![CDATA[<h1 id="一、文件服务器"><a href="#一、文件服务器" class="headerlink" title="一、文件服务器"></a>一、文件服务器</h1><p><a href="https://github.com/codeskyblue/gohttpserver">gohttpserver</a> 是一个简单易于部署的 HTTP 文件服务，支持权限控制，OpenID 接入。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d -p 16666:8000 -v /data/file-server:/app/public --name gohttpserver codeskyblue/gohttpserver --upload --delete</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h3><ul>
-<li><code>docker run</code>：这是 Docker 命令，用于运行一个新的容器。</li>
-<li><code>-d</code>：表示以分离模式（detached mode）运行容器。容器将在后台运行，你不会看到其输出。</li>
-<li><code>-p 16666:8000</code>：将宿主机的端口 16666 映射到容器内的端口 8000。这意味着你可以通过访问宿主机的 <code>http://localhost:16666</code> 来访问容器内运行的服务。</li>
-<li><code>-v /data/file-server:/app/public</code>：将宿主机目录 <code>/data/file-server</code> 挂载到容器内的 <code>/app/public</code> 目录。这样，容器内的 <code>/app/public</code> 目录会对应宿主机上的 <code>/data/file-server</code> 目录。所有在容器中上传或删除的文件都会反映到宿主机上的该目录。</li>
-<li><code>--name gohttpserver</code>：为容器指定一个名字 <code>gohttpserver</code>。你可以通过这个名字来管理该容器。</li>
-<li><code>codeskyblue/gohttpserver</code>：这是要运行的 Docker 镜像的名称。<code>codeskyblue/gohttpserver</code> 是一个开源的基于 Go 语言的 HTTP 文件服务器。</li>
-<li><code>--upload</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件上传功能。</li>
-<li><code>--delete</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件删除功能。</li>
-</ul>
-<h1 id="二、文档服务器"><a href="#二、文档服务器" class="headerlink" title="二、文档服务器"></a>二、文档服务器</h1><p><a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material</a> 是 MkDocs 之上的一个强大的文档框架，可以根据项目文档生成静态站点。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -p 8000:8000 -v /home/document/:/docs squidfunk/mkdocs-material</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>实用工具</category>
-      </categories>
-      <tags>
-        <tag>HTTP文件服务器</tag>
-        <tag>文档服务器</tag>
       </tags>
   </entry>
   <entry>
@@ -1057,6 +979,84 @@
       </categories>
       <tags>
         <tag>逻辑题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>常用工具梳理（文档服务/文件服务）</title>
+    <url>/2024/07/29/tools/</url>
+    <content><![CDATA[<h1 id="一、文件服务器"><a href="#一、文件服务器" class="headerlink" title="一、文件服务器"></a>一、文件服务器</h1><p><a href="https://github.com/codeskyblue/gohttpserver">gohttpserver</a> 是一个简单易于部署的 HTTP 文件服务，支持权限控制，OpenID 接入。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d -p 16666:8000 -v /data/file-server:/app/public --name gohttpserver codeskyblue/gohttpserver --upload --delete</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="详细解释"><a href="#详细解释" class="headerlink" title="详细解释"></a>详细解释</h3><ul>
+<li><code>docker run</code>：这是 Docker 命令，用于运行一个新的容器。</li>
+<li><code>-d</code>：表示以分离模式（detached mode）运行容器。容器将在后台运行，你不会看到其输出。</li>
+<li><code>-p 16666:8000</code>：将宿主机的端口 16666 映射到容器内的端口 8000。这意味着你可以通过访问宿主机的 <code>http://localhost:16666</code> 来访问容器内运行的服务。</li>
+<li><code>-v /data/file-server:/app/public</code>：将宿主机目录 <code>/data/file-server</code> 挂载到容器内的 <code>/app/public</code> 目录。这样，容器内的 <code>/app/public</code> 目录会对应宿主机上的 <code>/data/file-server</code> 目录。所有在容器中上传或删除的文件都会反映到宿主机上的该目录。</li>
+<li><code>--name gohttpserver</code>：为容器指定一个名字 <code>gohttpserver</code>。你可以通过这个名字来管理该容器。</li>
+<li><code>codeskyblue/gohttpserver</code>：这是要运行的 Docker 镜像的名称。<code>codeskyblue/gohttpserver</code> 是一个开源的基于 Go 语言的 HTTP 文件服务器。</li>
+<li><code>--upload</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件上传功能。</li>
+<li><code>--delete</code>：这是传递给 <code>gohttpserver</code> 的参数，表示启用文件删除功能。</li>
+</ul>
+<h1 id="二、文档服务器"><a href="#二、文档服务器" class="headerlink" title="二、文档服务器"></a>二、文档服务器</h1><p><a href="https://squidfunk.github.io/mkdocs-material/">mkdocs-material</a> 是 MkDocs 之上的一个强大的文档框架，可以根据项目文档生成静态站点。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -p 8000:8000 -v /home/document/:/docs squidfunk/mkdocs-material</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>实用工具</category>
+      </categories>
+      <tags>
+        <tag>HTTP文件服务器</tag>
+        <tag>文档服务器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Neo4j 图数据库搭建记录</title>
+    <url>/2024/07/23/neo4j/</url>
+    <content><![CDATA[<h1 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h1><p>公司数据团队内部下半年计划有数仓模型进行梳理，治理跨层依赖等场景，需要通过爬虫将数据平台中的依赖关系抓取落地并进行分析。</p>
+<p>针对数仓调度依赖、数据存储等场景，使用图数据库存储和分析有天然的优势。</p>
+<p>在数仓节点&#x2F;边等有限的背景下，结合 <a href="https://db-engines.com/en/ranking/graph+dbms">Graph DBMS</a> 排名，使用热度最高的 Neo4j 社区版单机部署足以满足场景需求，且 Neo4j 发展多年，相关文档较为完善，便于遇到线上问题时查阅排除。</p>
+<span id="more"></span>
+
+<h1 id="二、部署步骤"><a href="#二、部署步骤" class="headerlink" title="二、部署步骤"></a>二、部署步骤</h1><p>通过 Docker 部署：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--name neo4j \</span><br><span class="line">-p 7474:7474 \</span><br><span class="line">-p 7687:7687 \</span><br><span class="line">-v /data1/neo4j/data:/data \</span><br><span class="line">-v /data1/neo4j/logs:/logs \</span><br><span class="line">-v /data1/neo4j/conf:/var/lib/neo4j/conf \</span><br><span class="line">-v /data1/neo4j/import:/var/lib/neo4j/import \</span><br><span class="line">--env NEO4J_AUTH=neo4j/bigdata \</span><br><span class="line">neo4j:4.4.35-community</span><br></pre></td></tr></table></figure>
+
+<h3 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h3><ul>
+<li><code>docker run</code>：启动一个新的 Docker 容器。</li>
+<li><code>-d</code>：在后台运行容器，即“detached”模式。</li>
+<li><code>--name neo4j</code>：将容器命名为 <code>neo4j</code>。</li>
+<li><code>-p 7474:7474</code>：将宿主机的 7474 端口映射到容器的 7474 端口，用于 Neo4j HTTP 接口。</li>
+<li><code>-p 7687:7687</code>：将宿主机的 7687 端口映射到容器的 7687 端口，用于 Neo4j Bolt 协议接口。</li>
+<li><code>-v /data1/neo4j/data:/data</code>：将宿主机的 <code>/data1/neo4j/data</code> 目录映射到容器的 <code>/data</code> 目录，用于存储数据库文件。</li>
+<li><code>-v /data1/neo4j/logs:/logs</code>：将宿主机的 <code>/data1/neo4j/logs</code> 目录映射到容器的 <code>/logs</code> 目录，用于存储日志文件。</li>
+<li><code>-v /data1/neo4j/conf:/var/lib/neo4j/conf</code>：将宿主机的 <code>/data1/neo4j/conf</code> 目录映射到容器的 <code>/var/lib/neo4j/conf</code> 目录，用于存储配置文件。</li>
+<li><code>-v /data1/neo4j/import:/var/lib/neo4j/import</code>：将宿主机的 <code>/data1/neo4j/import</code> 目录映射到容器的 <code>/var/lib/neo4j/import</code> 目录，用于导入文件。</li>
+<li><code>--env NEO4J_AUTH=neo4j/xxxxxx</code>：设置环境变量 <code>NEO4J_AUTH</code>，指定 Neo4j 的认证方式（用户名为neo4j，密码为 <code>xxxxxx</code>）。</li>
+<li><code>neo4j:4.4.35-community</code>：指定要运行的 Neo4j 社区版镜像的具体版本 <code>4.4.35</code>。</li>
+</ul>
+<h3 id="修改配置文件-允许远程登陆"><a href="#修改配置文件-允许远程登陆" class="headerlink" title="修改配置文件&#x2F;允许远程登陆"></a>修改配置文件&#x2F;允许远程登陆</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim /data1/neo4j/conf/neo4j.conf</span><br><span class="line">// 指定连接器的默认监听ip为0.0.0.0，即允许任何ip连接到数据库</span><br><span class="line">dbms.connectors.default_listen_address=0.0.0.0</span><br><span class="line">dbms.connector.bolt.listen_address=0.0.0.0:7687</span><br><span class="line">dbms.connector.http.listen_address=0.0.0.0:7474</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、桌面端下载"><a href="#三、桌面端下载" class="headerlink" title="三、桌面端下载"></a>三、桌面端下载</h1><p><a href="https://neo4j.com/download/">Neo4j Download</a></p>
+<h1 id="四、常用查询"><a href="#四、常用查询" class="headerlink" title="四、常用查询"></a>四、常用查询</h1><p>使用教程：<a href="https://www.w3cschool.cn/neo4j/neo4j_cql_introduction.html">w3cschool.cn</a></p>
+<ul>
+<li>查询孤儿节点</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MATCH (n)</span><br><span class="line">WHERE NOT (n)--()</span><br><span class="line">RETURN n</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查询孤儿节点数量</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MATCH (n)</span><br><span class="line">WHERE NOT (n)--()</span><br><span class="line">RETURN COUNT(n) AS orphanNodeCount</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>数据组件</category>
+      </categories>
+      <tags>
+        <tag>数据库</tag>
+        <tag>图数据库</tag>
+        <tag>neo4j</tag>
       </tags>
   </entry>
 </search>
