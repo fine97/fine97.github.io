@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一、用户互相关注现在有一张relation表，里面只有两个字段：from_user和to_user，代表关注关系从from指向to，即from_user关注了to_user。现在要找出互相关注的所有人。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大数据常见 SQL 面试题2">
+<meta property="og:url" content="http://example.com/2024/08/05/bigdata-sql2/index.html">
+<meta property="og:site_name" content="imfine">
+<meta property="og:description" content="一、用户互相关注现在有一张relation表，里面只有两个字段：from_user和to_user，代表关注关系从from指向to，即from_user关注了to_user。现在要找出互相关注的所有人。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-08-05T09:23:52.000Z">
+<meta property="article:modified_time" content="2024-08-05T11:51:32.099Z">
+<meta property="article:author" content="fine97">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/08/05/bigdata-sql2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-Hans","comments":true,"permalink":"http://example.com/2024/08/05/bigdata-sql2/","path":"2024/08/05/bigdata-sql2/","title":"大数据常见 SQL 面试题2"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>大数据常见 SQL 面试题2 | imfine</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?9a1d0a35b0f216d90eaf8e863cdf9055"></script>
+
+
+
+
+
+
+<link rel="dns-prefetch" href="waline.imfine.cloud">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <a target="_blank" rel="noopener" href="https://github.com/fine97" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">imfine</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-links"><a href="/links/" rel="section"><i class="fa fa-sitemap fa-fw"></i>友链</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%94%A8%E6%88%B7%E4%BA%92%E7%9B%B8%E5%85%B3%E6%B3%A8"><span class="nav-number">1.</span> <span class="nav-text">一、用户互相关注</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%9C%80%E5%A4%A7%E8%BF%9E%E7%BB%AD%E7%99%BB%E5%BD%95%E5%A4%A9%E6%95%B0-%E5%8D%87%E7%BA%A7%E7%89%88"><span class="nav-number">2.</span> <span class="nav-text">二、最大连续登录天数(升级版)</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="fine97"
+      src="/images/images.jpeg">
+  <p class="site-author-name" itemprop="name">fine97</p>
+  <div class="site-description" itemprop="description">怀揣梦想，永远热泪盈眶~！</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fine97" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fine97" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:mayifan@88.com" title="E-Mail → mailto:mayifan@88.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/05/bigdata-sql2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/images.jpeg">
+      <meta itemprop="name" content="fine97">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="imfine">
+      <meta itemprop="description" content="怀揣梦想，永远热泪盈眶~！">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="大数据常见 SQL 面试题2 | imfine">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大数据常见 SQL 面试题2
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-08-05 17:23:52 / 修改时间：19:51:32" itemprop="dateCreated datePublished" datetime="2024-08-05T17:23:52+08:00">2024-08-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">面试题</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">Waline：</span>
+  
+    <a title="waline" href="/2024/08/05/bigdata-sql2/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2024/08/05/bigdata-sql2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="一、用户互相关注"><a href="#一、用户互相关注" class="headerlink" title="一、用户互相关注"></a>一、用户互相关注</h1><p>现在有一张relation表，里面只有两个字段：from_user和to_user，代表关注关系从from指向to，即from_user关注了to_user。现在要找出互相关注的所有人。</p>
+<span id="more"></span>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">from_user    to_user</span><br><span class="line"><span class="comment">---</span></span><br><span class="line">孙悟空          唐僧</span><br><span class="line">唐僧            如来佛祖</span><br><span class="line">唐僧            观音菩萨</span><br><span class="line">观音菩萨         如来佛祖</span><br><span class="line">唐僧            孙悟空</span><br><span class="line">孙悟空          玉皇大帝</span><br><span class="line">玉皇大帝        如来佛祖</span><br><span class="line">如来佛祖         观音菩萨</span><br><span class="line">如来佛祖         玉皇大帝</span><br><span class="line">如来佛祖         唐僧</span><br><span class="line">孙悟空          猪八戒</span><br><span class="line">猪八戒            嫦娥</span><br><span class="line">猪八戒           孙悟空</span><br><span class="line">猪八戒           唐僧</span><br><span class="line">猪八戒          沙僧</span><br><span class="line">沙僧            猪八戒</span><br><span class="line">沙僧            玉皇大帝</span><br><span class="line">沙僧            孙悟空</span><br><span class="line">沙僧            唐僧</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 方法一：自关联join，t1.from = t2.to (t1主动关注者被t2的关注) + t1.to= t2.from (t2主动关注者被t1的关注) ，会有数据膨胀。</span></span><br><span class="line"><span class="keyword">WITH</span> source_table <span class="keyword">AS</span></span><br><span class="line">(</span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;观音菩萨&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;观音菩萨&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;玉皇大帝&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;玉皇大帝&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;观音菩萨&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;玉皇大帝&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;嫦娥&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;玉皇大帝&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> table1.from_user from_user, table1.to_user to_user</span><br><span class="line"><span class="keyword">FROM</span> source_table table1</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> source_table table2</span><br><span class="line"><span class="keyword">ON</span> table1.from_user <span class="operator">=</span> table2.to_user <span class="keyword">AND</span> table2.from_user <span class="operator">=</span> table1.to_user</span><br><span class="line"><span class="keyword">WHERE</span> table2.to_user <span class="keyword">IS</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 方法二：针对表中数据每一行，新增一列单向关系。例如A关注B 或者 B关注A，单向关注关系都是A-&gt;B。当A-&gt;B这一行时，按单向关注关系分区，分区内有A-&gt;B 和 A-&gt;B两行，那么计数为2的就是互相关注的。</span></span><br><span class="line"><span class="keyword">WITH</span> source_table <span class="keyword">AS</span></span><br><span class="line">(</span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;观音菩萨&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;观音菩萨&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;玉皇大帝&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;玉皇大帝&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;观音菩萨&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;玉皇大帝&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;如来佛祖&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;嫦娥&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;猪八戒&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;玉皇大帝&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;孙悟空&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span></span><br><span class="line"><span class="keyword">select</span> <span class="string">&#x27;沙僧&#x27;</span> <span class="keyword">as</span> from_user, <span class="string">&#x27;唐僧&#x27;</span> <span class="keyword">as</span> to_user</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> from_user, to_user</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">  <span class="keyword">SELECT</span> from_user, to_user, <span class="built_in">COUNT</span>(users) <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> users) is_friend</span><br><span class="line">  <span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> from_user, to_user, IF(from_user <span class="operator">&gt;</span> to_user, CONCAT(from_user, <span class="string">&#x27;:&#x27;</span>, to_user), CONCAT(to_user, <span class="string">&#x27;:&#x27;</span>, from_user)) users</span><br><span class="line">    <span class="keyword">FROM</span> source_table</span><br><span class="line">  ) source_table_a</span><br><span class="line">) source_table_b</span><br><span class="line"><span class="keyword">WHERE</span> is_friend <span class="operator">=</span> <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="二、最大连续登录天数-升级版"><a href="#二、最大连续登录天数-升级版" class="headerlink" title="二、最大连续登录天数(升级版)"></a>二、最大连续登录天数(升级版)</h1><p>下面是某游戏公司记录的用户每日登录数据, 计算每个用户最大的连续登录天数，定义连续登录时可以间隔一天。举例：如果一个用户在 1,3,5,6,9 登录了游戏，则视为连续 6 天登录。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">user_id          dt</span><br><span class="line"><span class="comment">---</span></span><br><span class="line"><span class="number">1001</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-12</span></span><br><span class="line"><span class="number">1002</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-12</span></span><br><span class="line"><span class="number">1001</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-13</span></span><br><span class="line"><span class="number">1001</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-14</span></span><br><span class="line"><span class="number">1001</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-16</span></span><br><span class="line"><span class="number">1002</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-16</span></span><br><span class="line"><span class="number">1001</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-19</span></span><br><span class="line"><span class="number">1002</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-17</span></span><br><span class="line"><span class="number">1001</span>    <span class="number">2021</span><span class="number">-12</span><span class="number">-20</span></span><br></pre></td></tr></table></figure>
+
+<p>如果没有用户登录天数则求解方式是：<code>当前日期 - rank_number</code> 求出的起始日期相同值聚合，求 <code>MAX</code> 即可。</p>
+<p>如上题则无法按照传统思路求解，需要每个日期中都拿到上次登录的日期，判断登录日期与上一个日期差值是否在2之内，然后根据标记开窗做sum。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> source_table <span class="keyword">AS</span> (       </span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1001&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-12&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">  <span class="keyword">UNION</span> <span class="keyword">ALL</span> </span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1002&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-12&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">  <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1001&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-13&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">  <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1001&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-14&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">  <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1001&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-16&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">  <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1002&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-16&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">  <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1001&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-19&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">  <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1002&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-17&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">  <span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line">  <span class="keyword">SELECT</span> <span class="string">&#x27;1001&#x27;</span> <span class="keyword">AS</span> user_id , <span class="string">&#x27;2021-12-20&#x27;</span> <span class="keyword">AS</span>  dt</span><br><span class="line">)</span><br><span class="line"><span class="keyword">SELECT</span> user_id, <span class="built_in">MAX</span>(diff) max_login_days</span><br><span class="line"><span class="keyword">FROM</span> (</span><br><span class="line">  <span class="keyword">SELECT</span> user_id, user_group, datediff(<span class="built_in">max</span>(dt), <span class="built_in">min</span>(dt)) <span class="operator">+</span> <span class="number">1</span> <span class="keyword">as</span> diff <span class="comment">-- 连续时间里面最大日期与最小日期的差值加1就得到来连续天数</span></span><br><span class="line">  <span class="keyword">FROM</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> user_id, IF(DATE_DIFF(dt, last_dt) <span class="operator">&lt;=</span> <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>) user_group</span><br><span class="line">    <span class="keyword">FROM</span> (</span><br><span class="line">      <span class="keyword">SELECT</span> user_id, dt, <span class="built_in">MAX</span>(dt) <span class="keyword">OVER</span>(<span class="keyword">PARTITION</span> <span class="keyword">BY</span> user_id <span class="keyword">ORDER</span> <span class="keyword">BY</span> dt <span class="keyword">ASC</span> <span class="keyword">ROWS</span> <span class="keyword">BETWEEN</span> UNBOUNDED PRECEDING <span class="keyword">AND</span> <span class="number">1</span> PRECEDING ) last_dt</span><br><span class="line">      <span class="keyword">FROM</span> source_table</span><br><span class="line">    ) source_table_a</span><br><span class="line">  ) source_table_b</span><br><span class="line">  <span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id, user_group</span><br><span class="line">) source_table_c</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id;</span><br></pre></td></tr></table></figure>
+
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SQL/" rel="tag"># SQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/05/idea/" rel="prev" title="Mac IDEA 快捷键大全">
+                  <i class="fa fa-angle-left"></i> Mac IDEA 快捷键大全
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">怀揣梦想，永远热泪盈眶~！</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">14k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">52 分钟</span>
+  </span>
+</div>
+
+<div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<span id="busuanzi_container_site_pv" style='display:none'>
+    本站总访问量： <span id="busuanzi_value_site_pv"></span> 次
+    <span class="post-meta-divider">|</span>
+</span>
+<span id="busuanzi_container_site_uv" style='display:none'>
+    访问人数：<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline.imfine.cloud","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":true,"pageview":false,"placeholder":"请文明评论","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"visitor":false,"comment_count":true,"requiredFields":["nick","mail"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2024/08/05/bigdata-sql2/"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+</body>
+</html>
